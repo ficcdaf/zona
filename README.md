@@ -25,5 +25,4 @@ TBD.
 
 ---
 
-Zona is a fork and continuation of [Zoner](https://git.sr.ht/~ryantrawick/zoner), a tool for building [Zonelets](https://zonelets.net/) style blogs. Zona is not committed to Zonelets backwards compatibility and will likely evolve new features.
-
+Zona is inspired by [Zoner](https://git.sr.ht/~ryantrawick/zoner), a tool for building [Zonelets](https://zonelets.net/) style blogs. Zona is not committed to Zonelets backwards compatibility and will likely evolve new features.
