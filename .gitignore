@@ -1,0 +1,24 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build artifacts
+bin/
+*.out
+# Symbolic link to binary for convenient testing
+./zona
+
+# Logs and debug information
+*.log
+
+# Temporary files and directories
+*.tmp
+*.swp
+*.swo
+*.bak
+*~
+
+# Go modules and caches
+go.sum
