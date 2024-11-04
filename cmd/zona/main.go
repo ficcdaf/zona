@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ficcdaf/zona/internal/convert"
 	"github.com/ficcdaf/zona/internal/util"
 )
 
@@ -45,13 +46,5 @@ func main() {
 		fmt.Println("File validation failed!")
 		os.Exit(1)
 	}
-
-	file, err := os.Open(*mdPath)
-	if err != nil {
-		fmt.Println("Error reading file:", err)
-		os.Exit(1)
-	}
-	defer file.Close()
-
-	fmt.Println("File opened :)")
+	convert.ConvertFile(*mdPath, "test/test.html")
 }

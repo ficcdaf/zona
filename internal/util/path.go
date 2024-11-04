@@ -3,10 +3,8 @@ package util
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 // CheckExtension checks if the file located at path (string)
@@ -26,7 +24,7 @@ func PathIsValid(path string, requireFile bool) bool {
 	if os.IsNotExist(err) {
 		return false
 	} else if requireFile {
-		fmt.Printf("Directory status: %s\n", strconv.FormatBool(s.IsDir()))
+		// fmt.Printf("Directory status: %s\n", strconv.FormatBool(s.IsDir()))
 		return !s.IsDir()
 	}
 	return err == nil
