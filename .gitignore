@@ -22,3 +22,5 @@ bin/
 
 # Go modules and caches
 go.sum
+
+test/
