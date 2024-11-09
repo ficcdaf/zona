@@ -3,6 +3,8 @@ package util
 
 import (
 	"errors"
+	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -28,4 +30,27 @@ func PathIsValid(path string, requireFile bool) bool {
 		return !s.IsDir()
 	}
 	return err == nil
+}
+
+func processFile(path string, entry fs.DirEntry, err error) error {
+	if err != nil {
+		return err
+	}
+	if !entry.IsDir() {
+		ext := filepath.Ext(path)
+		switch ext {
+		case ".md":
+			fmt.Println("Processing markdown...")
+		default:
+			// All other file types, we copy!
+		}
+	}
+	fmt.Printf("Visited: %s\n", path)
+	return nil
+}
+
+func Traverse(root string) error {
+	// err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
+	err := filepath.WalkDir(root, processFile)
+	return err
 }

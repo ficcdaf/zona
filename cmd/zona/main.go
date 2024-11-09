@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ficcdaf/zona/internal/convert"
 	"github.com/ficcdaf/zona/internal/util"
 )
 
@@ -42,9 +41,13 @@ func main() {
 		}
 
 	}
-	if !validateFile(*mdPath, ".md") {
-		fmt.Println("File validation failed!")
-		os.Exit(1)
+	// if !validateFile(*mdPath, ".md") {
+	// 	fmt.Println("File validation failed!")
+	// 	os.Exit(1)
+	// }
+	// convert.ConvertFile(*mdPath, "test/test.html")
+	err := util.Traverse("test")
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
 	}
-	convert.ConvertFile(*mdPath, "test/test.html")
 }
