@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // CheckExtension checks if the file located at path (string)
@@ -32,12 +33,30 @@ func PathIsValid(path string, requireFile bool) bool {
 	return err == nil
 }
 
-func processFile(path string, entry fs.DirEntry, err error) error {
+func getRoot(path string) string {
+	for {
+		parent := filepath.Dir(path)
+		if parent == path {
+			break
+		}
+		path = parent
+	}
+	return path
+}
+
+func replaceRoot(inPath, outRoot string) string {
+	relPath := strings.TrimPrefix(inPath, getRoot(inPath))
+	outPath := filepath.Join(outRoot, relPath)
+	return outPath
+}
+
+func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) error {
 	if err != nil {
 		return err
 	}
 	if !entry.IsDir() {
-		ext := filepath.Ext(path)
+		ext := filepath.Ext(inPath)
+		fmt.Println("Root: ", replaceRoot(inPath, outRoot))
 		switch ext {
 		case ".md":
 			fmt.Println("Processing markdown...")
@@ -45,12 +64,15 @@ func processFile(path string, entry fs.DirEntry, err error) error {
 			// All other file types, we copy!
 		}
 	}
-	fmt.Printf("Visited: %s\n", path)
+	fmt.Printf("Visited: %s\n", inPath)
 	return nil
 }
 
-func Traverse(root string) error {
+func Traverse(root string, outRoot string) error {
 	// err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
-	err := filepath.WalkDir(root, processFile)
+	walkFunc := func(path string, entry fs.DirEntry, err error) error {
+		return processFile(path, entry, err, outRoot)
+	}
+	err := filepath.WalkDir(root, walkFunc)
 	return err
 }
