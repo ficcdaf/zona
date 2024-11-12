@@ -51,6 +51,21 @@ func replaceRoot(inPath, outRoot string) string {
 	return outPath
 }
 
+func createFileWithParents(path string) error {
+	dir := filepath.Dir(path)
+	// Check if the parent directory already exists
+	// before trying to create it
+	if _, dirErr := os.Stat(dir); os.IsNotExist(dirErr) {
+		// create directories
+		err := os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			return err
+		}
+		// TODO: write the file here
+	}
+	return nil
+}
+
 func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) error {
 	if err != nil {
 		return err
