@@ -36,11 +36,12 @@ func PathIsValid(path string, requireFile bool) bool {
 func getRoot(path string) string {
 	for {
 		parent := filepath.Dir(path)
-		if parent == path {
+		if parent == "." {
 			break
 		}
 		path = parent
 	}
+	fmt.Println("getRoot: ", path)
 	return path
 }
 
