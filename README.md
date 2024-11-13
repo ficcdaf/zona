@@ -2,7 +2,7 @@
 
 Zona is a small tool for building a static blog website. It allows users to write pages and blog posts in Markdown and automatically build them into a static, lightweight blog.
 
-> **Warning:** Implementing v1 functionality in Go is still WIP. While this warning is here, Zona is _not_ ready to use! At all!
+> **Warning:** Implementing v1 functionality is still WIP. There will be binaries available to download from the Releases tab when Zona is ready to be used. Until then, you are welcome to download the source code, but I can't promise anything will work!
 
 ## Table of Contents
 
