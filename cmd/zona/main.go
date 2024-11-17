@@ -46,7 +46,7 @@ func main() {
 	// 	os.Exit(1)
 	// }
 	// convert.ConvertFile(*mdPath, "test/test.html")
-	err := util.Traverse("test")
+	err := util.Traverse(*mdPath, "foobar")
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 	}
