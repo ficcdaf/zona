@@ -1,67 +1,45 @@
 # Zona
 
-Zona is a small tool for building a static blog website. It allows users to write pages and blog posts in Markdown and automatically build them into a static, lightweight blog.
+Zona is a small tool for building a static website. It will allows users to write pages and blog posts in Markdown and build them into a static, lightweight website.
 
-> **Warning:** Implementing v1 functionality is still WIP. There will be binaries available to download from the Releases tab when Zona is ready to be used. Until then, you are welcome to download the source code, but I can't promise anything will work!
+**Warning:** Zona has not yet reached **v1**, and it is not yet functional. Therefore, no installation instructions are provided. You may check progress in the `dev` branch of this repository.
 
 ## Table of Contents
 
-- [Features](#v1-features)
-- [Installation](#installation)
+- [Design Goals](#design-goals)
+- [v1 Features](#v1-features)
 - [Roadmap](#roadmap)
+- [Contribution](#contribution)
+- [Inspirations](#inspirations)
+
+## Design Goals
+
+Zona is intended to be lightweight, easy-to-use, and ship with sane defaults while still providing flexibility and powerful customization options. This tool is intended for people that wish to maintain a simple blog or personal website, do not want to write HTML, and don't need any JavaScript or backend functionality. This makes it perfect for static site hosting like Neocities or GitHub Pages.
 
 ## v1 Features
 
-- Write your pages in Markdown.
-- Build a lightweight website with zero JavaScript.
-- Simple CLI build interface.
-- HTML layout optimized for screen readers and Neocities.
-
-## Getting Started
-
-### Dependencies
-
-- `go 1.23.2`
-
-```Bash
-# On Arch Linux
-sudo pacman -S go
-
-# On Ubuntu/Debian
-sudo apt install go
-```
-
-### Installation
-
-First, download the repository and open it:
-
-```Bash
-git clone https://github.com/ficcdaf/zona.git && cd zona
-```
-
-On Linux:
-
-```Bash
-# run the provided build script
-./build.sh
-```
-
-On other platforms:
-
-```Bash
-go build -o bin/zona cmd/zona
-```
-
-The resulting binary can be found at `bin/zona`.
+- Write pages in Markdown and build a simple HTML website.
+- Automatically generated `Archive` page and `Recent Posts` element.
+- Custom CSS support with sensible light & dark default themes.
+- Single-command build process with optional flags for more control.
+- HTML layout optimized for screen readers.
+- Lightweight output.
 
 ## Roadmap
 
-- [ ] Zona configuration file to define build options.
-- [ ] Image optimization & dithering options.
-- [ ] AUR package after first release
-- [ ] Automatic RSS/Atom feed generation.
+- [ ] Optional configuration file to define build options.
+- [ ] Optional RSS/Atom feed generation.
+- [ ] Optional image optimization & dithering.
+- [ ] AUR package.
+- [ ] Windows, Mac, Linux releases.
+- [ ] Custom tags that expand to user-defined HTML templates.
+- [ ] Companion Neovim plugin for previewing website while editing.
+
+## Contribution
+
+Zona is a small project maintained by a very busy graduate student. If you want to contribute, you are more than welcome to submit issues and pull requests.
 
 ## Inspirations
 
 - [Zoner](https://git.sr.ht/~ryantrawick/zoner)
-- Zonelets
+- [Zonelets](https://zonelets.net/)
