@@ -22,19 +22,6 @@ func CheckExtension(path, ext string) error {
 	}
 }
 
-// PathIsValid checks if a path is valid.
-// If requireFile is set, directories are not considered valid.
-func PathIsValid(path string, requireFile bool) bool {
-	s, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		return false
-	} else if requireFile {
-		// fmt.Printf("Directory status: %s\n", strconv.FormatBool(s.IsDir()))
-		return !s.IsDir()
-	}
-	return err == nil
-}
-
 func getRoot(path string) string {
 	for {
 		parent := filepath.Dir(path)
@@ -43,7 +30,7 @@ func getRoot(path string) string {
 		}
 		path = parent
 	}
-	fmt.Println("getRoot: ", path)
+	// fmt.Println("getRoot: ", path)
 	return path
 }
 
@@ -73,7 +60,7 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) er
 	if !entry.IsDir() {
 		ext := filepath.Ext(inPath)
 		outPath := replaceRoot(inPath, outRoot)
-		fmt.Println("NewRoot: ", outPath)
+		// fmt.Println("NewRoot: ", outPath)
 		switch ext {
 		case ".md":
 			fmt.Println("Processing markdown...")
@@ -99,7 +86,7 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) er
 			}
 		}
 	}
-	fmt.Printf("Visited: %s\n", inPath)
+	// fmt.Printf("Visited: %s\n", inPath)
 	return nil
 }
 
