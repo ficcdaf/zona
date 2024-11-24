@@ -3,6 +3,8 @@ package convert
 import (
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
@@ -62,6 +64,20 @@ func ReadFile(p string) ([]byte, error) {
 	return result, nil
 }
 
+// CopyFile reads the file at the input path, and write
+// it to the output path.
+func CopyFile(inPath string, outPath string) error {
+	inB, err := ReadFile(inPath)
+	if err != nil {
+		return err
+	}
+	if err := WriteFile(inB, outPath); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
 func ConvertFile(in string, out string) error {
 	md, err := ReadFile(in)
 	if err != nil {
@@ -73,4 +89,8 @@ func ConvertFile(in string, out string) error {
 	}
 	err = WriteFile(html, out)
 	return err
+}
+
+func ChangeExtension(in string, outExt string) string {
+	return strings.TrimSuffix(in, filepath.Ext(in)) + outExt
 }

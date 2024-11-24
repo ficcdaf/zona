@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ficcdaf/zona/internal/convert"
 )
 
 // CheckExtension checks if the file located at path (string)
@@ -51,17 +53,15 @@ func replaceRoot(inPath, outRoot string) string {
 	return outPath
 }
 
-func createFileWithParents(path string) error {
+func createParents(path string) error {
 	dir := filepath.Dir(path)
 	// Check if the parent directory already exists
 	// before trying to create it
 	if _, dirErr := os.Stat(dir); os.IsNotExist(dirErr) {
 		// create directories
-		err := os.MkdirAll(dir, os.ModePerm)
-		if err != nil {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 			return err
 		}
-		// TODO: write the file here
 	}
 	return nil
 }
@@ -72,12 +72,31 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) er
 	}
 	if !entry.IsDir() {
 		ext := filepath.Ext(inPath)
-		fmt.Println("Root: ", replaceRoot(inPath, outRoot))
+		outPath := replaceRoot(inPath, outRoot)
+		fmt.Println("NewRoot: ", outPath)
 		switch ext {
 		case ".md":
 			fmt.Println("Processing markdown...")
+			outPath = convert.ChangeExtension(outPath, ".html")
+			if err := createParents(outPath); err != nil {
+				return err
+			}
+			if err := convert.ConvertFile(inPath, outPath); err != nil {
+				return errors.Join(errors.New("Error processing file "+inPath), err)
+			} else {
+				return nil
+			}
+		// If it's not a file we need to process,
+		// we simply copy it to the destination path.
 		default:
-			// All other file types, we copy!
+			if err := createParents(outPath); err != nil {
+				return err
+			}
+			if err := convert.CopyFile(inPath, outPath); err != nil {
+				return errors.Join(errors.New("Error processing file "+inPath), err)
+			} else {
+				return nil
+			}
 		}
 	}
 	fmt.Printf("Visited: %s\n", inPath)
