@@ -1,11 +1,11 @@
-package convert_test
+package build_test
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/ficcdaf/zona/internal/convert"
+	"github.com/ficcdaf/zona/internal/build"
 	"github.com/ficcdaf/zona/internal/util"
 )
 
@@ -13,7 +13,7 @@ func TestMdToHTML(t *testing.T) {
 	md := []byte("# Hello World\n\nThis is a test.")
 	expectedHTML := "<h1 id=\"hello-world\">Hello World</h1>\n<p>This is a test.</p>\n"
 	nExpectedHTML := util.NormalizeContent(expectedHTML)
-	html, err := convert.MdToHTML(md)
+	html, err := build.MdToHTML(md)
 	nHtml := util.NormalizeContent(string(html))
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
@@ -27,7 +27,7 @@ func TestWriteFile(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "test.txt")
 	content := []byte("Hello, World!")
 
-	err := convert.WriteFile(content, path)
+	err := build.WriteFile(content, path)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -51,7 +51,7 @@ func TestReadFile(t *testing.T) {
 		t.Fatalf("Error writing file: %v", err)
 	}
 
-	data, err := convert.ReadFile(path)
+	data, err := build.ReadFile(path)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -70,7 +70,7 @@ func TestCopyFile(t *testing.T) {
 		t.Fatalf("Error writing source file: %v", err)
 	}
 
-	err = convert.CopyFile(src, dst)
+	err = build.CopyFile(src, dst)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -96,7 +96,7 @@ func TestConvertFile(t *testing.T) {
 		t.Fatalf("Error writing source Markdown file: %v", err)
 	}
 
-	err = convert.ConvertFile(src, dst)
+	err = build.ConvertFile(src, dst)
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -113,7 +113,7 @@ func TestConvertFile(t *testing.T) {
 
 func TestChangeExtension(t *testing.T) {
 	input := "test.md"
-	output := convert.ChangeExtension(input, ".html")
+	output := build.ChangeExtension(input, ".html")
 	expected := "test.html"
 
 	if output != expected {

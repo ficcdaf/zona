@@ -1,4 +1,4 @@
-package convert
+package build
 
 import (
 	"bytes"
@@ -49,26 +49,32 @@ func pathToTitle(path string) string {
 	return strings.ToTitle(replaced)
 }
 
-func buildPageData(m Metadata) *PageData {
+func buildPageData(m Metadata, path string) *PageData {
 	p := &PageData{}
 	if title, ok := m["title"].(string); ok {
 		p.Title = title
 	} else {
-		p.Title = pathToTitle(m["path"].(string))
+		p.Title = pathToTitle(path)
 	}
 	if icon, ok := m["icon"].(string); ok {
 		p.Icon = icon
 	} else {
-		p.Icon = ""
+		p.Icon = DefaultIcon
 	}
 	if style, ok := m["style"].(string); ok {
 		p.Stylesheet = style
+	} else {
+		p.Stylesheet = DefaultStylesheet
 	}
 	if header, ok := m["header"].(string); ok {
 		p.Header = header
+	} else {
+		p.Header = DefaultHeader
 	}
 	if footer, ok := m["footer"].(string); ok {
 		p.Footer = footer
+	} else {
+		p.Footer = DefaultFooter
 	}
 	return p
 }
@@ -82,18 +88,25 @@ func ConvertFile(in string, out string) error {
 	if err != nil {
 		return err
 	}
-	metadata["path"] = in
-	pd := buildPageData(metadata)
-	fmt.Println("Page title: ", pd.Title)
-	pd.Content = template.HTML(md)
-
-	tmlp, err := template.New("webpage").Parse("placeholder")
+	pd := buildPageData(metadata, in)
 
 	// build according to template here
 	html, err := MdToHTML(md)
 	if err != nil {
 		return err
 	}
-	err = WriteFile(html, out)
+	pd.Content = template.HTML(html)
+
+	tmpl, err := template.New("webpage").Parse(DefaultTemplate)
+	if err != nil {
+		return err
+	}
+
+	var output bytes.Buffer
+	if err := tmpl.Execute(&output, pd); err != nil {
+		return err
+	}
+
+	err = WriteFile(output.Bytes(), out)
 	return err
 }

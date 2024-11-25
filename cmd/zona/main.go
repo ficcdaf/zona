@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ficcdaf/zona/internal/convert"
+	"github.com/ficcdaf/zona/internal/build"
 )
 
 // // validateFile checks whether a given path
@@ -41,7 +41,7 @@ func main() {
 		}
 
 	}
-	err := convert.Traverse(*rootPath, "foobar")
+	err := build.Traverse(*rootPath, "foobar")
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 	}
