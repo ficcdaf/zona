@@ -60,7 +60,6 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) er
 	if !entry.IsDir() {
 		ext := filepath.Ext(inPath)
 		outPath := replaceRoot(inPath, outRoot)
-		// fmt.Println("NewRoot: ", outPath)
 		switch ext {
 		case ".md":
 			fmt.Println("Processing markdown...")

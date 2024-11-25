@@ -21,7 +21,7 @@ func MdToHTML(md []byte) ([]byte, error) {
 	doc := p.Parse(md)
 
 	// build HTML renderer
-	htmlFlags := html.CommonFlags | html.HrefTargetBlank | html.CompletePage
+	htmlFlags := html.CommonFlags | html.HrefTargetBlank
 	opts := html.RendererOptions{Flags: htmlFlags}
 	renderer := newZonaRenderer(opts)
 
@@ -129,19 +129,6 @@ func CopyFile(inPath string, outPath string) error {
 	} else {
 		return nil
 	}
-}
-
-func ConvertFile(in string, out string) error {
-	md, err := ReadFile(in)
-	if err != nil {
-		return err
-	}
-	html, err := MdToHTML(md)
-	if err != nil {
-		return err
-	}
-	err = WriteFile(html, out)
-	return err
 }
 
 func ChangeExtension(in string, outExt string) string {
