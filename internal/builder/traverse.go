@@ -33,7 +33,7 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 			if err := util.CreateParents(outPath); err != nil {
 				return err
 			}
-			if err := CopyFile(inPath, outPath); err != nil {
+			if err := util.CopyFile(inPath, outPath); err != nil {
 				return errors.Join(errors.New("Error processing file "+inPath), err)
 			} else {
 				return nil

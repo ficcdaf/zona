@@ -40,6 +40,13 @@ func ReplaceRoot(inPath, outRoot string) string {
 	return outPath
 }
 
+// FileExists returns a boolean indicating
+// whether something exists at the path.
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
 func CreateParents(path string) error {
 	dir := filepath.Dir(path)
 	// Check if the parent directory already exists

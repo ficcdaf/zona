@@ -74,7 +74,7 @@ func buildPageData(m Metadata, path string, settings *Settings) *PageData {
 }
 
 func ConvertFile(in string, out string, settings *Settings) error {
-	mdPre, err := ReadFile(in)
+	mdPre, err := util.ReadFile(in)
 	if err != nil {
 		return err
 	}
@@ -86,10 +86,7 @@ func ConvertFile(in string, out string, settings *Settings) error {
 	fmt.Println("Title: ", pd.Title)
 
 	// build according to template here
-	html, err := MdToHTML(md)
-	if err != nil {
-		return err
-	}
+	html := MdToHTML(md)
 	pd.Content = template.HTML(html)
 
 	tmpl, err := template.New("webpage").Parse(settings.DefaultTemplate)
@@ -102,6 +99,6 @@ func ConvertFile(in string, out string, settings *Settings) error {
 		return err
 	}
 
-	err = WriteFile(output.Bytes(), out)
+	err = util.WriteFile(output.Bytes(), out)
 	return err
 }
