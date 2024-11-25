@@ -53,22 +53,22 @@ func buildPageData(m Metadata, path string, settings *Settings) *PageData {
 	if icon, ok := m["icon"].(string); ok {
 		p.Icon = icon
 	} else {
-		p.Icon = settings.Icon
+		p.Icon = settings.IconName
 	}
 	if style, ok := m["style"].(string); ok {
 		p.Stylesheet = style
 	} else {
-		p.Stylesheet = settings.Stylesheet
+		p.Stylesheet = settings.StylesheetName
 	}
 	if header, ok := m["header"].(string); ok {
 		p.Header = header
 	} else {
-		p.Header = settings.Header
+		p.Header = settings.HeaderName
 	}
 	if footer, ok := m["footer"].(string); ok {
 		p.Footer = footer
 	} else {
-		p.Footer = settings.Footer
+		p.Footer = settings.FooterName
 	}
 	return p
 }

@@ -11,12 +11,13 @@ import (
 )
 
 const (
-	DefConfigName     = "config.yml"
-	DefHeaderName     = "header.md"
-	DefFooterName     = "footer.md"
-	DefStylesheetName = "style.css"
-	DefIconName       = "icon.png"
-	DefTemplateName = "default.html"
+	DefConfigName       = "config.yml"
+	DefHeaderName       = "header.md"
+	DefFooterName       = "footer.md"
+	DefStylesheetName   = "style.css"
+	DefIconName         = "icon.png"
+	DefTemplateName     = "default.html"
+	ArticleTemplateName = "article.html"
 )
 
 //go:embed embed
@@ -27,12 +28,13 @@ type Settings struct {
 	HeaderName          string
 	Footer              template.HTML
 	FooterName          string
-	Stylesheet          []byte
 	StylesheetName      string
-	Icon                []byte
 	IconName            string
-	DefaultTemplate     template.HTML
+	DefaultTemplate     string
 	DefaultTemplateName string
+	ArticleTemplate     string
+	Stylesheet          []byte
+	Icon                []byte
 }
 
 func buildSettings(f []byte) (*Settings, error) {
@@ -90,7 +92,20 @@ func buildSettings(f []byte) (*Settings, error) {
 		s.Icon = icon
 		s.IconName = DefIconName
 	}
-	if 
+	if templateName, ok := c["template"].(string); ok {
+		temp, err := util.ReadFile(templateName)
+		if err != nil {
+			return nil, util.ErrorPrepend("Could not read template specified in config: ", err)
+		}
+		s.DefaultTemplate = string(temp)
+		s.DefaultTemplateName = templateName
+	} else {
+		temp := readEmbed(DefTemplateName)
+		s.DefaultTemplate = string(temp)
+		s.DefaultTemplateName = DefTemplateName
+	}
+	artTemp := readEmbed(ArticleTemplateName)
+	s.ArticleTemplate = string(artTemp)
 
 	return s, nil
 }
@@ -105,21 +120,21 @@ func readEmbed(name string) []byte {
 }
 
 func GetSettings(root string) *Settings {
-	// TODO: Read a config file to override defaults
-	// "Defaults" should be a default config file via embed package,
-	// so the settings func should need to handle one case:
-	// check if config file exists, if not, use embedded one
 	var config []byte
 	configPath := filepath.Join(root, DefConfigName)
 	if !util.FileExists(configPath) {
 		// Config file does not exist, we used embedded default
 		config = readEmbed(configPath)
 	} else {
-		config, err := util.ReadFile(configPath)
+		var err error
+		config, err = util.ReadFile(configPath)
 		if err != nil {
 			log.Fatalln("Fatal internal error: Config file exists but could not be read!")
 		}
 	}
-
-	// return NewSettings(DefaultHeader, DefaultFooter, DefaultStylesheet, DefaultIcon, DefaultTemplate)
+	s, err := buildSettings(config)
+	if err != nil {
+		log.Fatalf("Fatal error: could not parse config: %u\n", err)
+	}
+	return s
 }
