@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ficcdaf/zona/internal/util"
+	"github.com/ficcdaf/zona/internal/convert"
 )
 
 // // validateFile checks whether a given path
@@ -16,9 +16,9 @@ import (
 // }
 
 func main() {
-	mdPath := flag.String("file", "", "Path to the markdown file.")
+	rootPath := flag.String("file", "", "Path to the markdown file.")
 	flag.Parse()
-	if *mdPath == "" {
+	if *rootPath == "" {
 		// no flag provided, check for positional argument instead
 		n := flag.NArg()
 		var e error
@@ -27,7 +27,7 @@ func main() {
 			// we read the positional arg
 			arg := flag.Arg(0)
 			// mdPath wants a pointer so we get arg's address
-			mdPath = &arg
+			rootPath = &arg
 		case 0:
 			// in case of no flag and no arg, we fail
 			e = errors.New("Required argument missing!")
@@ -41,7 +41,7 @@ func main() {
 		}
 
 	}
-	err := util.Traverse(*mdPath, "foobar")
+	err := convert.Traverse(*rootPath, "foobar")
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 	}

@@ -3,13 +3,9 @@ package util
 
 import (
 	"errors"
-	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/ficcdaf/zona/internal/convert"
 )
 
 // CheckExtension checks if the file located at path (string)
@@ -34,13 +30,13 @@ func getRoot(path string) string {
 	return path
 }
 
-func replaceRoot(inPath, outRoot string) string {
+func ReplaceRoot(inPath, outRoot string) string {
 	relPath := strings.TrimPrefix(inPath, getRoot(inPath))
 	outPath := filepath.Join(outRoot, relPath)
 	return outPath
 }
 
-func createParents(path string) error {
+func CreateParents(path string) error {
 	dir := filepath.Dir(path)
 	// Check if the parent directory already exists
 	// before trying to create it
@@ -51,49 +47,4 @@ func createParents(path string) error {
 		}
 	}
 	return nil
-}
-
-func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) error {
-	if err != nil {
-		return err
-	}
-	if !entry.IsDir() {
-		ext := filepath.Ext(inPath)
-		outPath := replaceRoot(inPath, outRoot)
-		switch ext {
-		case ".md":
-			fmt.Println("Processing markdown...")
-			outPath = convert.ChangeExtension(outPath, ".html")
-			if err := createParents(outPath); err != nil {
-				return err
-			}
-			if err := convert.ConvertFile(inPath, outPath); err != nil {
-				return errors.Join(errors.New("Error processing file "+inPath), err)
-			} else {
-				return nil
-			}
-		// If it's not a file we need to process,
-		// we simply copy it to the destination path.
-		default:
-			if err := createParents(outPath); err != nil {
-				return err
-			}
-			if err := convert.CopyFile(inPath, outPath); err != nil {
-				return errors.Join(errors.New("Error processing file "+inPath), err)
-			} else {
-				return nil
-			}
-		}
-	}
-	// fmt.Printf("Visited: %s\n", inPath)
-	return nil
-}
-
-func Traverse(root string, outRoot string) error {
-	// err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
-	walkFunc := func(path string, entry fs.DirEntry, err error) error {
-		return processFile(path, entry, err, outRoot)
-	}
-	err := filepath.WalkDir(root, walkFunc)
-	return err
 }
