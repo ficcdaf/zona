@@ -1,4 +1,8 @@
-package build
+package builder
+
+import (
+	"embed"
+)
 
 const (
 	DefaultHeader     = ""
@@ -35,18 +39,31 @@ const (
 </html>`
 )
 
+//go:embed embed
+var embedDir embed.FS
+
 type Settings struct {
-	Header     string
-	Footer     string
-	Stylesheet string
-	Icon       string
+	Header          string
+	Footer          string
+	Stylesheet      string
+	Icon            string
+	DefaultTemplate string
 }
 
-func NewSettings(header string, footer string, style string, icon string) *Settings {
+func NewSettings(header string, footer string, style string, icon string, temp string) *Settings {
 	return &Settings{
 		header,
 		footer,
 		style,
 		icon,
+		temp,
 	}
+}
+
+func GetSettings() *Settings {
+	// TODO: Read a config file to override defaults
+	// "Defaults" should be a default config file via embed package,
+	// so the settings func should need to handle one case:
+	// check if config file exists, if not, use embedded one
+	return NewSettings(DefaultHeader, DefaultFooter, DefaultStylesheet, DefaultIcon, DefaultTemplate)
 }

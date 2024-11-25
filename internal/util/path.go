@@ -18,6 +18,10 @@ func CheckExtension(path, ext string) error {
 	}
 }
 
+func ChangeExtension(in string, outExt string) string {
+	return strings.TrimSuffix(in, filepath.Ext(in)) + outExt
+}
+
 func getRoot(path string) string {
 	for {
 		parent := filepath.Dir(path)

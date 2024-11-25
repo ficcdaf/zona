@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ficcdaf/zona/internal/build"
+	"github.com/ficcdaf/zona/internal/builder"
 )
 
 // // validateFile checks whether a given path
@@ -41,7 +41,8 @@ func main() {
 		}
 
 	}
-	err := build.Traverse(*rootPath, "foobar")
+	settings := builder.GetSettings()
+	err := builder.Traverse(*rootPath, "foobar", settings)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 	}

@@ -1,4 +1,4 @@
-package build
+package builder
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"github.com/ficcdaf/zona/internal/util"
 )
 
-func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) error {
+func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, settings *Settings) error {
 	if err != nil {
 		return err
 	}
@@ -18,11 +18,11 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) er
 		switch ext {
 		case ".md":
 			// fmt.Println("Processing markdown...")
-			outPath = ChangeExtension(outPath, ".html")
+			outPath = util.ChangeExtension(outPath, ".html")
 			if err := util.CreateParents(outPath); err != nil {
 				return err
 			}
-			if err := ConvertFile(inPath, outPath); err != nil {
+			if err := ConvertFile(inPath, outPath, settings); err != nil {
 				return errors.Join(errors.New("Error processing file "+inPath), err)
 			} else {
 				return nil
@@ -44,10 +44,9 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) er
 	return nil
 }
 
-func Traverse(root string, outRoot string) error {
-	// err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
+func Traverse(root string, outRoot string, settings *Settings) error {
 	walkFunc := func(path string, entry fs.DirEntry, err error) error {
-		return processFile(path, entry, err, outRoot)
+		return processFile(path, entry, err, outRoot, settings)
 	}
 	err := filepath.WalkDir(root, walkFunc)
 	return err

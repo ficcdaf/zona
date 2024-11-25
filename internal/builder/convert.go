@@ -1,12 +1,12 @@
-package build
+package builder
 
 import (
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/ficcdaf/zona/internal/util"
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/html"
@@ -47,7 +47,7 @@ func processLink(p string) string {
 	// Only process if it points to an existing, local markdown file
 	if ext == ".md" && filepath.IsLocal(p) {
 		// fmt.Println("Markdown link detected...")
-		return ChangeExtension(p, ".html")
+		return util.ChangeExtension(p, ".html")
 	} else {
 		return p
 	}
@@ -129,8 +129,4 @@ func CopyFile(inPath string, outPath string) error {
 	} else {
 		return nil
 	}
-}
-
-func ChangeExtension(in string, outExt string) string {
-	return strings.TrimSuffix(in, filepath.Ext(in)) + outExt
 }

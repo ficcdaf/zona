@@ -1,4 +1,4 @@
-package build
+package builder
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/ficcdaf/zona/internal/util"
 	"gopkg.in/yaml.v3"
 )
 
@@ -18,6 +19,7 @@ type PageData struct {
 	NextPost   string
 	PrevPost   string
 	Footer     string
+	Template   string
 }
 
 type Metadata map[string]interface{}
@@ -41,37 +43,37 @@ func processWithYaml(f []byte) (Metadata, []byte, error) {
 	return meta, []byte(split[2]), nil
 }
 
-func buildPageData(m Metadata, path string) *PageData {
+func buildPageData(m Metadata, path string, settings *Settings) *PageData {
 	p := &PageData{}
 	if title, ok := m["title"].(string); ok {
-		p.Title = wordsToTitle(title)
+		p.Title = util.WordsToTitle(title)
 	} else {
-		p.Title = pathToTitle(path)
+		p.Title = util.PathToTitle(path)
 	}
 	if icon, ok := m["icon"].(string); ok {
 		p.Icon = icon
 	} else {
-		p.Icon = DefaultIcon
+		p.Icon = settings.Icon
 	}
 	if style, ok := m["style"].(string); ok {
 		p.Stylesheet = style
 	} else {
-		p.Stylesheet = DefaultStylesheet
+		p.Stylesheet = settings.Stylesheet
 	}
 	if header, ok := m["header"].(string); ok {
 		p.Header = header
 	} else {
-		p.Header = DefaultHeader
+		p.Header = settings.Header
 	}
 	if footer, ok := m["footer"].(string); ok {
 		p.Footer = footer
 	} else {
-		p.Footer = DefaultFooter
+		p.Footer = settings.Footer
 	}
 	return p
 }
 
-func ConvertFile(in string, out string) error {
+func ConvertFile(in string, out string, settings *Settings) error {
 	mdPre, err := ReadFile(in)
 	if err != nil {
 		return err
@@ -80,7 +82,7 @@ func ConvertFile(in string, out string) error {
 	if err != nil {
 		return err
 	}
-	pd := buildPageData(metadata, in)
+	pd := buildPageData(metadata, in, settings)
 	fmt.Println("Title: ", pd.Title)
 
 	// build according to template here
@@ -90,7 +92,7 @@ func ConvertFile(in string, out string) error {
 	}
 	pd.Content = template.HTML(html)
 
-	tmpl, err := template.New("webpage").Parse(DefaultTemplate)
+	tmpl, err := template.New("webpage").Parse(settings.DefaultTemplate)
 	if err != nil {
 		return err
 	}
