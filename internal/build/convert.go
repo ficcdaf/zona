@@ -42,11 +42,11 @@ func PathIsValid(path string, requireFile bool) bool {
 }
 
 func processLink(p string) string {
-	fmt.Println("Processing link...")
+	// fmt.Println("Processing link...")
 	ext := filepath.Ext(p)
 	// Only process if it points to an existing, local markdown file
 	if ext == ".md" && filepath.IsLocal(p) {
-		fmt.Println("Markdown link detected...")
+		// fmt.Println("Markdown link detected...")
 		return ChangeExtension(p, ".html")
 	} else {
 		return p

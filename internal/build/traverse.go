@@ -2,7 +2,6 @@ package build
 
 import (
 	"errors"
-	"fmt"
 	"io/fs"
 	"path/filepath"
 
@@ -18,7 +17,7 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string) er
 		outPath := util.ReplaceRoot(inPath, outRoot)
 		switch ext {
 		case ".md":
-			fmt.Println("Processing markdown...")
+			// fmt.Println("Processing markdown...")
 			outPath = ChangeExtension(outPath, ".html")
 			if err := util.CreateParents(outPath); err != nil {
 				return err

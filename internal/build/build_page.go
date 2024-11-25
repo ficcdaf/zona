@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -42,17 +41,10 @@ func processWithYaml(f []byte) (Metadata, []byte, error) {
 	return meta, []byte(split[2]), nil
 }
 
-// this function converts a file path to its title form
-func pathToTitle(path string) string {
-	stripped := ChangeExtension(filepath.Base(path), "")
-	replaced := strings.NewReplacer("-", " ", "_", " ", `\ `, " ").Replace(stripped)
-	return strings.ToTitle(replaced)
-}
-
 func buildPageData(m Metadata, path string) *PageData {
 	p := &PageData{}
 	if title, ok := m["title"].(string); ok {
-		p.Title = title
+		p.Title = wordsToTitle(title)
 	} else {
 		p.Title = pathToTitle(path)
 	}
@@ -89,6 +81,7 @@ func ConvertFile(in string, out string) error {
 		return err
 	}
 	pd := buildPageData(metadata, in)
+	fmt.Println("Title: ", pd.Title)
 
 	// build according to template here
 	html, err := MdToHTML(md)
