@@ -20,7 +20,23 @@ const (
 	ArticleTemplateName = "article.html"
 )
 
-//go:embed embed
+var defaultNames = map[string]string{
+	"config":   "config.yml",
+	"header":   "header.md",
+	"footer":   "footer.md",
+	"style":    "style.css",
+	"icon":     "favicon.png",
+	"article":  "article.html",
+	"template": "default.html",
+}
+
+//go:embed embed/article.html
+//go:embed embed/config.yml
+//go:embed embed/default.html
+//go:embed embed/favicon.png
+//go:embed embed/footer.md
+//go:embed embed/header.md
+//go:embed embed/style.css
 var embedDir embed.FS
 
 type Settings struct {
@@ -37,6 +53,23 @@ type Settings struct {
 	Icon                []byte
 }
 
+// processSetting checks the user's configuration for
+// each option. If set, reads the specified file. If not,
+// default option is used.
+func processSetting(c map[string]interface{}, s string) (string, []byte, error) {
+	if name, ok := c[s].(string); ok {
+		val, err := util.ReadFile(name)
+		if err != nil {
+			return "", nil, util.ErrorPrepend("Could not read "+s+" specified in config: ", err)
+		}
+		return name, val, nil
+	} else {
+		val := readEmbed(defaultNames[s])
+		return defaultNames[s], val, nil
+	}
+}
+
+// buildSettings constructs the Settings struct.
 func buildSettings(f []byte) (*Settings, error) {
 	s := &Settings{}
 	var c map[string]interface{}
@@ -44,66 +77,37 @@ func buildSettings(f []byte) (*Settings, error) {
 	if err := yaml.Unmarshal(f, &c); err != nil {
 		return nil, err
 	}
-	if headerName, ok := c["header"].(string); ok {
-		header, err := util.ReadFile(headerName)
-		s.HeaderName = headerName
-		if err != nil {
-			return nil, util.ErrorPrepend("Could not read header specified in config: ", err)
-		}
-		s.Header = template.HTML(MdToHTML(header))
-	} else {
-		header := readEmbed(DefHeaderName)
-		s.Header = template.HTML(MdToHTML(header))
-		s.HeaderName = DefHeaderName
+	n, v, err := processSetting(c, "header")
+	if err != nil {
+		return nil, err
 	}
-	if footerName, ok := c["footer"].(string); ok {
-		footer, err := util.ReadFile(footerName)
-		s.FooterName = footerName
-		if err != nil {
-			return nil, util.ErrorPrepend("Could not read footer specified in config: ", err)
-		}
-		s.Footer = template.HTML(MdToHTML(footer))
-	} else {
-		footer := readEmbed(DefFooterName)
-		s.Footer = template.HTML(MdToHTML(footer))
-		s.FooterName = DefFooterName
+	s.HeaderName = n
+	s.Header = template.HTML(MdToHTML(v))
+	n, v, err = processSetting(c, "footer")
+	if err != nil {
+		return nil, err
 	}
-	if stylesheetName, ok := c["stylesheet"].(string); ok {
-		stylesheet, err := util.ReadFile(stylesheetName)
-		if err != nil {
-			return nil, util.ErrorPrepend("Could not read stylesheet specified in config: ", err)
-		}
-		s.StylesheetName = stylesheetName
-		s.Stylesheet = stylesheet
-	} else {
-		stylesheet := readEmbed(DefStylesheetName)
-		s.Stylesheet = stylesheet
-		s.StylesheetName = DefStylesheetName
+	s.FooterName = n
+	s.Footer = template.HTML(MdToHTML(v))
+	n, v, err = processSetting(c, "style")
+	if err != nil {
+		return nil, err
 	}
-	if iconName, ok := c["icon"].(string); ok {
-		icon, err := util.ReadFile(iconName)
-		if err != nil {
-			return nil, util.ErrorPrepend("Could not read icon specified in config: ", err)
-		}
-		s.Icon = icon
-		s.IconName = iconName
-	} else {
-		icon := readEmbed(DefIconName)
-		s.Icon = icon
-		s.IconName = DefIconName
+	s.StylesheetName = n
+	s.Stylesheet = MdToHTML(v)
+
+	n, v, err = processSetting(c, "icon")
+	if err != nil {
+		return nil, err
 	}
-	if templateName, ok := c["template"].(string); ok {
-		temp, err := util.ReadFile(templateName)
-		if err != nil {
-			return nil, util.ErrorPrepend("Could not read template specified in config: ", err)
-		}
-		s.DefaultTemplate = string(temp)
-		s.DefaultTemplateName = templateName
-	} else {
-		temp := readEmbed(DefTemplateName)
-		s.DefaultTemplate = string(temp)
-		s.DefaultTemplateName = DefTemplateName
+	s.IconName = n
+	s.Icon = v
+	n, v, err = processSetting(c, "template")
+	if err != nil {
+		return nil, err
 	}
+	s.DefaultTemplateName = n
+	s.DefaultTemplate = string(v)
 	artTemp := readEmbed(ArticleTemplateName)
 	s.ArticleTemplate = string(artTemp)
 
@@ -112,9 +116,10 @@ func buildSettings(f []byte) (*Settings, error) {
 
 // readEmbed reads a file inside the embedded dir
 func readEmbed(name string) []byte {
-	f, err := embedDir.ReadFile(name)
+	f, err := embedDir.ReadFile("embed/" + name)
 	if err != nil {
-		log.Fatalln("Fatal internal error: Could not read embedded default config!")
+		// panic(0)
+		log.Fatalf("Fatal internal error: Could not read embedded default %s! %u", name, err)
 	}
 	return f
 }
@@ -124,7 +129,7 @@ func GetSettings(root string) *Settings {
 	configPath := filepath.Join(root, DefConfigName)
 	if !util.FileExists(configPath) {
 		// Config file does not exist, we used embedded default
-		config = readEmbed(configPath)
+		config = readEmbed(defaultNames["config"])
 	} else {
 		var err error
 		config, err = util.ReadFile(configPath)

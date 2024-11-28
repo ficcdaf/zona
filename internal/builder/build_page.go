@@ -14,11 +14,13 @@ type PageData struct {
 	Title      string
 	Icon       string
 	Stylesheet string
-	Header     string
+	HeaderName string
+	Header     template.HTML
 	Content    template.HTML
 	NextPost   string
 	PrevPost   string
-	Footer     string
+	FooterName string
+	Footer     template.HTML
 	Template   string
 }
 
@@ -61,14 +63,19 @@ func buildPageData(m Metadata, path string, settings *Settings) *PageData {
 		p.Stylesheet = settings.StylesheetName
 	}
 	if header, ok := m["header"].(string); ok {
-		p.Header = header
+		p.HeaderName = header
+		// for now we use default anyways
+		p.Header = settings.Header
 	} else {
-		p.Header = settings.HeaderName
+		p.HeaderName = settings.HeaderName
+		p.Header = settings.Header
 	}
 	if footer, ok := m["footer"].(string); ok {
-		p.Footer = footer
+		p.FooterName = footer
+		p.Footer = settings.Footer
 	} else {
-		p.Footer = settings.FooterName
+		p.FooterName = settings.FooterName
+		p.Footer = settings.Footer
 	}
 	return p
 }
