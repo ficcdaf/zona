@@ -41,7 +41,7 @@ func main() {
 		}
 
 	}
-	settings := builder.GetSettings(*rootPath)
+	settings := builder.GetSettings(*rootPath, "foobar")
 	err := builder.Traverse(*rootPath, "foobar", settings)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())

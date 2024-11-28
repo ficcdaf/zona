@@ -11,13 +11,14 @@ import (
 )
 
 var defaultNames = map[string]string{
-	"config":   "config.yml",
-	"header":   "header.md",
-	"footer":   "footer.md",
-	"style":    "style.css",
-	"icon":     "favicon.png",
-	"article":  "article.html",
-	"template": "default.html",
+	"config":    "config.yml",
+	"header":    "header.md",
+	"footer":    "footer.md",
+	"style":     "style.css",
+	"stylePath": filepath.Join("style", "style.css"),
+	"icon":      "favicon.png",
+	"article":   "article.html",
+	"template":  "default.html",
 }
 
 //go:embed embed/article.html
@@ -40,8 +41,11 @@ type Settings struct {
 	DefaultTemplateName string
 	ArticleTemplate     string
 	Stylesheet          []byte
+	StylePath           string
 	Icon                []byte
 }
+
+var isDefaultStyle bool
 
 // processSetting checks the user's configuration for
 // each option. If set, reads the specified file. If not,
@@ -55,12 +59,13 @@ func processSetting(c map[string]interface{}, s string) (string, []byte, error) 
 		return name, val, nil
 	} else {
 		val := readEmbed(defaultNames[s])
+		isDefaultStyle = true
 		return defaultNames[s], val, nil
 	}
 }
 
 // buildSettings constructs the Settings struct.
-func buildSettings(f []byte) (*Settings, error) {
+func buildSettings(f []byte, outRoot string) (*Settings, error) {
 	s := &Settings{}
 	var c map[string]interface{}
 	// Parse YAML
@@ -79,12 +84,27 @@ func buildSettings(f []byte) (*Settings, error) {
 	}
 	s.FooterName = n
 	s.Footer = template.HTML(MdToHTML(v))
+	isDefaultStyle = false
 	n, v, err = processSetting(c, "style")
 	if err != nil {
 		return nil, err
 	}
 	s.StylesheetName = n
-	s.Stylesheet = MdToHTML(v)
+	s.Stylesheet = v
+
+	if isDefaultStyle {
+		stylePath := filepath.Join(outRoot, defaultNames["stylePath"])
+		// We convert the stylesheet path to its website root dir format and store it
+		s.StylePath = "/" + util.StripTopDir(stylePath)
+		err := util.CreateParents(stylePath)
+		if err != nil {
+			return nil, util.ErrorPrepend("Could not create default stylesheet directory: ", err)
+		}
+		err = util.WriteFile(s.Stylesheet, stylePath)
+		if err != nil {
+			return nil, util.ErrorPrepend("Could not create default stylesheet: ", err)
+		}
+	}
 
 	n, v, err = processSetting(c, "icon")
 	if err != nil {
@@ -114,7 +134,7 @@ func readEmbed(name string) []byte {
 	return f
 }
 
-func GetSettings(root string) *Settings {
+func GetSettings(root string, outRoot string) *Settings {
 	var config []byte
 	configPath := filepath.Join(root, defaultNames["config"])
 	if !util.FileExists(configPath) {
@@ -122,12 +142,12 @@ func GetSettings(root string) *Settings {
 		config = readEmbed(defaultNames["config"])
 	} else {
 		var err error
-		config, err = util.ReadFile(configPath)
+		config, err = util.ReadFile(filepath.Join(root, configPath))
 		if err != nil {
 			log.Fatalln("Fatal internal error: Config file exists but could not be read!")
 		}
 	}
-	s, err := buildSettings(config)
+	s, err := buildSettings(config, outRoot)
 	if err != nil {
 		log.Fatalf("Fatal error: could not parse config: %u\n", err)
 	}

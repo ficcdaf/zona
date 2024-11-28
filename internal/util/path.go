@@ -47,6 +47,7 @@ func FileExists(path string) bool {
 	return !os.IsNotExist(err)
 }
 
+// CreateParents creates the parent directories required for a given path
 func CreateParents(path string) error {
 	dir := filepath.Dir(path)
 	// Check if the parent directory already exists
@@ -58,4 +59,13 @@ func CreateParents(path string) error {
 		}
 	}
 	return nil
+}
+
+func StripTopDir(path string) string {
+	cleanedPath := filepath.Clean(path)
+	components := strings.Split(cleanedPath, string(filepath.Separator))
+	if len(components) <= 1 {
+		return path
+	}
+	return filepath.Join(components[1:]...)
 }

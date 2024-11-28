@@ -1,0 +1,148 @@
+:root {
+  --main-text-color: white;
+  --main-bg-color: #1b1b1b;
+  --main-transparent: rgba(255, 255, 255, 0.15);
+  --main-small-text-color: rgba(255, 255, 255, 0.45);
+}
+
+body {
+  line-height: 1.6;
+  font-size: 18px;
+  font-family: sans-serif;
+  background: var(--main-bg-color);
+  color: var(--main-text-color);
+  padding-left: calc(100vw - 100%);
+}
+h1 {
+  margin-block-start: 0.67rem;
+  margin-block-end: 0.67rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+article h1:first-of-type {
+  margin-block-start: 1.67rem;
+}
+h2 {
+  margin-block-start: 0.83rem;
+  margin-block-end: 0.83rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+h3 {
+  margin-block-start: 1rem;
+  margin-block-end: 1rem;
+  font-size: 1.17em;
+  font-weight: bold;
+}
+h4 {
+  margin-block-start: 1.33rem;
+  margin-block-end: 1.33rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+article h1 + h4:first-of-type {
+  margin-block-start: 0rem;
+}
+h5 {
+  margin-block-start: 1.67rem;
+  margin-block-end: 1.67rem;
+  font-size: 0.83rem;
+  font-weight: bold;
+}
+h6 {
+  margin-block-start: 2.33rem;
+  margin-block-end: 2.33rem;
+  font-size: 0.67rem;
+  font-weight: bold;
+}
+a {
+  color: var(--main-text-color);
+}
+a:hover {
+  background: var(--main-transparent);
+}
+img {
+  width: auto;
+  height: auto;
+}
+blockquote {
+  color: var(--main-small-text-color);
+  border-left: 3px solid var(--main-transparent);
+  padding: 0 1rem;
+  margin-left: 0;
+  margin-right: 0;
+}
+hr {
+  border: none;
+  height: 1px;
+  background: var(--main-small-text-color);
+}
+code {
+  background: var(--main-transparent);
+  border-radius: 0.1875rem;
+  /* padding: .0625rem .1875rem; */
+  /* margin: 0 .1875rem; */
+}
+code,
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+small {
+  font-size: 0.95rem;
+  color: var(--main-small-text-color);
+}
+small a {
+  color: inherit; /* Inherit the color of the surrounding <small> text */
+  text-decoration: underline; /* Optional: Keep the underline to indicate a link */
+}
+.image-container {
+  text-align: center;
+  margin: 20px 0; /* Optional: add some spacing around the image container */
+}
+
+.image-container img {
+  /* max-width: 308px; */
+  max-height: 308px;
+}
+
+.image-container small {
+  display: block; /* Ensure the caption is on a new line */
+  margin-top: 5px; /* Optional: adjust spacing between image and caption */
+}
+
+.image-container small a {
+  color: inherit; /* Ensure the link color matches the small text */
+  text-decoration: underline; /* Optional: underline to indicate a link */
+}
+#header ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+#header li {
+  display: inline;
+  font-size: 1.2rem;
+  margin-right: 1.2rem;
+}
+#container {
+  margin: 2.5rem auto;
+  width: 90%;
+  max-width: 60ch;
+}
+#postlistdiv ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+.moreposts {
+  font-size: 0.95rem;
+  padding-left: 0.5rem;
+}
+#nextprev {
+  text-align: center;
+  margin-top: 1.4rem;
+  font-size: 0.95rem;
+}
+#footer {
+  color: var(--main-small-text-color);
+}

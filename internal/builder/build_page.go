@@ -60,7 +60,7 @@ func buildPageData(m Metadata, path string, settings *Settings) *PageData {
 	if style, ok := m["style"].(string); ok {
 		p.Stylesheet = style
 	} else {
-		p.Stylesheet = settings.StylesheetName
+		p.Stylesheet = settings.StylePath
 	}
 	if header, ok := m["header"].(string); ok {
 		p.HeaderName = header
