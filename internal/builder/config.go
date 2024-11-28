@@ -10,16 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const (
-	DefConfigName       = "config.yml"
-	DefHeaderName       = "header.md"
-	DefFooterName       = "footer.md"
-	DefStylesheetName   = "style.css"
-	DefIconName         = "icon.png"
-	DefTemplateName     = "default.html"
-	ArticleTemplateName = "article.html"
-)
-
 var defaultNames = map[string]string{
 	"config":   "config.yml",
 	"header":   "header.md",
@@ -108,7 +98,7 @@ func buildSettings(f []byte) (*Settings, error) {
 	}
 	s.DefaultTemplateName = n
 	s.DefaultTemplate = string(v)
-	artTemp := readEmbed(ArticleTemplateName)
+	artTemp := readEmbed(string(defaultNames["article"]))
 	s.ArticleTemplate = string(artTemp)
 
 	return s, nil
@@ -126,7 +116,7 @@ func readEmbed(name string) []byte {
 
 func GetSettings(root string) *Settings {
 	var config []byte
-	configPath := filepath.Join(root, DefConfigName)
+	configPath := filepath.Join(root, defaultNames["config"])
 	if !util.FileExists(configPath) {
 		// Config file does not exist, we used embedded default
 		config = readEmbed(defaultNames["config"])

@@ -77,6 +77,11 @@ func buildPageData(m Metadata, path string, settings *Settings) *PageData {
 		p.FooterName = settings.FooterName
 		p.Footer = settings.Footer
 	}
+	if t, ok := m["type"].(string); ok && t == "article" || t == "post" {
+		p.Template = (settings.ArticleTemplate)
+	} else {
+		p.Template = (settings.DefaultTemplate)
+	}
 	return p
 }
 
@@ -96,7 +101,7 @@ func ConvertFile(in string, out string, settings *Settings) error {
 	html := MdToHTML(md)
 	pd.Content = template.HTML(html)
 
-	tmpl, err := template.New("webpage").Parse(settings.DefaultTemplate)
+	tmpl, err := template.New("webpage").Parse(pd.Template)
 	if err != nil {
 		return err
 	}
