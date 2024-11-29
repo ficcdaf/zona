@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"log"
+	"path/filepath"
 	"strings"
 
 	"github.com/ficcdaf/zona/internal/util"
@@ -45,23 +47,31 @@ func processWithYaml(f []byte) (Metadata, []byte, error) {
 	return meta, []byte(split[2]), nil
 }
 
-func buildPageData(m Metadata, path string, settings *Settings) *PageData {
+func buildPageData(m Metadata, in string, out string, settings *Settings) *PageData {
 	p := &PageData{}
 	if title, ok := m["title"].(string); ok {
 		p.Title = util.WordsToTitle(title)
 	} else {
-		p.Title = util.PathToTitle(path)
+		p.Title = util.PathToTitle(in)
 	}
 	if icon, ok := m["icon"].(string); ok {
 		p.Icon = icon
 	} else {
 		p.Icon = settings.IconName
 	}
+	var stylePath string
 	if style, ok := m["style"].(string); ok {
-		p.Stylesheet = style
+		stylePath = style
 	} else {
-		p.Stylesheet = settings.StylePath
+		stylePath = settings.StylePath
 	}
+	curDir := filepath.Dir(out)
+	relPath, err := filepath.Rel(curDir, stylePath)
+	// fmt.Printf("fp: %s, sp: %s, rp: %s\n", curDir, stylePath, relPath)
+	if err != nil {
+		log.Fatalln("Error calculating stylesheet path: ", err)
+	}
+	p.Stylesheet = relPath
 	if header, ok := m["header"].(string); ok {
 		p.HeaderName = header
 		// for now we use default anyways
@@ -94,7 +104,7 @@ func ConvertFile(in string, out string, settings *Settings) error {
 	if err != nil {
 		return err
 	}
-	pd := buildPageData(metadata, in, settings)
+	pd := buildPageData(metadata, in, out, settings)
 	fmt.Println("Title: ", pd.Title)
 
 	// build according to template here

@@ -94,8 +94,7 @@ func buildSettings(f []byte, outRoot string) (*Settings, error) {
 
 	if isDefaultStyle {
 		stylePath := filepath.Join(outRoot, defaultNames["stylePath"])
-		// We convert the stylesheet path to its website root dir format and store it
-		s.StylePath = "/" + util.StripTopDir(stylePath)
+		s.StylePath = stylePath
 		err := util.CreateParents(stylePath)
 		if err != nil {
 			return nil, util.ErrorPrepend("Could not create default stylesheet directory: ", err)
