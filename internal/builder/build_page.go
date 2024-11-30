@@ -30,12 +30,14 @@ type Metadata map[string]interface{}
 
 func processWithYaml(f []byte) (Metadata, []byte, error) {
 	// Check if the file has valid metadata
-	if !bytes.HasPrefix(f, []byte("---\n")) {
+	trimmed := bytes.TrimSpace(f)
+	normalized := strings.ReplaceAll(string(trimmed), "\r\n", "\n")
+	if !strings.HasPrefix(normalized, ("---\n")) {
 		// No valid yaml, so return the entire content
 		return nil, f, nil
 	}
 	// Separate YAML from rest of document
-	split := strings.SplitN(string(f), "---\n", 3)
+	split := strings.SplitN(normalized, "---\n", 3)
 	if len(split) < 3 {
 		return nil, nil, fmt.Errorf("Invalid frontmatter format.")
 	}
