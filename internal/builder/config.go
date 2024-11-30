@@ -141,9 +141,10 @@ func GetSettings(root string, outRoot string) *Settings {
 		config = readEmbed(defaultNames["config"])
 	} else {
 		var err error
-		config, err = util.ReadFile(filepath.Join(root, configPath))
+		// config, err = util.ReadFile(filepath.Join(root, configPath))
+		config, err = util.ReadFile(configPath)
 		if err != nil {
-			log.Fatalln("Fatal internal error: Config file exists but could not be read!")
+			log.Fatalln("Fatal internal error: Config file exists but could not be read!", err)
 		}
 	}
 	s, err := buildSettings(config, outRoot)
