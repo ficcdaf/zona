@@ -1,49 +1,80 @@
 package main
 
 import (
-	"errors"
-	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/ficcdaf/zona/internal/builder"
+	"github.com/urfave/cli/v2"
 )
 
-// // validateFile checks whether a given path
-// // is a valid file && matches an expected extension
-// func validateFile(path, ext string) bool {
-// 	return (util.CheckExtension(path, ext) == nil) && (util.PathIsValid(path, true))
-// }
-
 func main() {
-	rootPath := flag.String("file", "", "Path to the markdown file.")
-	flag.Parse()
-	if *rootPath == "" {
-		// no flag provided, check for positional argument instead
-		n := flag.NArg()
-		var e error
-		switch n {
-		case 1:
-			// we read the positional arg
-			arg := flag.Arg(0)
-			// mdPath wants a pointer so we get arg's address
-			rootPath = &arg
-		case 0:
-			// in case of no flag and no arg, we fail
-			e = errors.New("Required argument missing!")
-		default:
-			// more args than expected is also fail
-			e = errors.New("Unexpected arguments!")
-		}
-		if e != nil {
-			fmt.Printf("Error: %s\n", e.Error())
-			os.Exit(1)
-		}
+	var force bool
+	var clean bool
+	app := &cli.App{
+		Name:    "zona",
+		Version: "0.0.1",
+		Usage:   "Static site builder.",
+		Flags: []cli.Flag{
+			cli.VersionFlag,
+		},
+		Commands: []*cli.Command{
+			{
+				Name:    "print",
+				Usage:   "Prints helpful information.",
+				Aliases: []string{"p"},
+				Action: func(ctx *cli.Context) error {
+					fmt.Println("Printing some good stuff.")
+					return nil
+				},
+			},
+			{
+				Name:      "build",
+				Usage:     "Builds the website.",
+				HideHelp:  true,
+				Args:      true,
+				UsageText: "zona build [opts] input_dir (output_dir)",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:        "force",
+						Aliases:     []string{"f"},
+						Usage:       "Overwrites files in output_dir if they exist.",
+						Destination: &force,
+					},
+					&cli.BoolFlag{
+						Name:        "clean",
+						Aliases:     []string{"c"},
+						Usage:       "Remove all files in output_dir that are not results of the current build.",
+						Destination: &clean,
+					},
+				},
+				Description: `The build command takes an input directory and an optional output directory. The default output_dir is named "{input_name}-built" and written to the same parent directory as the input.`,
+				Aliases:     []string{"b"},
+				Action: func(ctx *cli.Context) error {
+					if ctx.NArg() == 0 {
+						cli.ShowCommandHelpAndExit(ctx, "build", 1)
+					}
+					if force {
+						fmt.Println("I'll need to pass the force var as an argument to build...")
+					}
+					return nil
+					// err := build(ctx.Args().Get(0), ctx.Args().Get(1))
+					// return err
+				},
+			},
+		},
+	}
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+}
 
-	}
-	settings := builder.GetSettings(*rootPath, "foobar")
-	err := builder.Traverse(*rootPath, "foobar", settings)
+func build(rootPath string, outPath string, force bool, clean bool) error {
+	settings := builder.GetSettings(rootPath, outPath, force, clean)
+	err := builder.Traverse(rootPath, outPath, settings)
 	if err != nil {
-		fmt.Printf("Error: %s\n", err.Error())
+		return fmt.Errorf("Build error: %s", err)
 	}
+	return nil
 }

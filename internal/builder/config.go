@@ -133,7 +133,7 @@ func readEmbed(name string) []byte {
 	return f
 }
 
-func GetSettings(root string, outRoot string) *Settings {
+func GetSettings(root string, outRoot string, force bool, clean bool) *Settings {
 	var config []byte
 	configPath := filepath.Join(root, defaultNames["config"])
 	if !util.FileExists(configPath) {
