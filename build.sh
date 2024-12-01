@@ -1,4 +1,5 @@
 #!/bin/bash
 
+go mod tidy
 go build -o bin/zona ./cmd/zona
-ln -sf bin/zona ./zona
+sudo cp -f bin/zona /usr/bin/zona
