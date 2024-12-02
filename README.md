@@ -1,8 +1,8 @@
 # Zona
 
-Zona is a small tool for building a static website. It will allows users to write pages and blog posts in Markdown and build them into a static, lightweight website.
+Zona is a tool for building a static website, optimized for lightweight blogs following minimalist design principles.
 
-**Warning:** Zona has not yet reached **v1**, and it is not yet functional. Therefore, no installation instructions are provided. You may check progress in the `dev` branch of this repository.
+**Warning:** Zona has not yet reached **v1**. The `dev-*` branches of this repository contain the code -- however, there is no assurance of stability or functionality until the first release. Configuration and usage documentation will also be provided at this time.
 
 ## Table of Contents
 
@@ -14,26 +14,28 @@ Zona is a small tool for building a static website. It will allows users to writ
 
 ## Design Goals
 
-Zona is intended to be lightweight, easy-to-use, and ship with sane defaults while still providing flexibility and powerful customization options. This tool is intended for people that wish to maintain a simple blog or personal website, do not want to write HTML, and don't need any JavaScript or backend functionality. This makes it perfect for static site hosting like Neocities or GitHub Pages.
+Zona is intended to be easy-to-use. A user should be able to build a reasonably complex website or blog with only a directory of Markdown content and a single command, without needing to write any HTML or configuration. However, users should optionally have access to sensible and flexible configuration options, including writing HTML. The output of Zona should also be lightweight, retaining the smallest file sizes possible. These characteristics make Zona well-suited for both beginners and power users that wish to host a website on a service like Neocities or GitHub Pages.
 
 ## v1 Features
 
-- Write pages in Markdown and build a simple HTML website.
-- Automatically generated `Archive` page and `Recent Posts` element.
-- Custom CSS support with sensible light & dark default themes.
-- Single-command build process with optional flags for more control.
-- HTML layout optimized for screen readers.
+- Write pages purely in Markdown.
+- Single-command build process.
 - Lightweight output.
+- Sensible default template and stylesheet.
+- Configuration entirely optional, but very powerful.
+- Site header and footer defined in Markdown.
+- Declarative metadata per Markdown file.
+- Automatically generated `Archive`, `Recent Posts`, and `Image Gallery` elements.
+- Support for custom stylesheets, favicons, and page templates.
 
 ## Roadmap
 
-- [ ] Optional configuration file to define build options.
-- [ ] Optional RSS/Atom feed generation.
-- [ ] Optional image optimization & dithering.
-- [ ] AUR package.
+- [ ] RSS/Atom feed generation.
+- [ ] Image optimization & dithering.
 - [ ] Windows, Mac, Linux releases.
-- [ ] Custom tags that expand to user-defined HTML templates.
-- [ ] Companion Neovim plugin for previewing website while editing.
+- [ ] AUR package.
+- [ ] Custom Markdown tags that expand to user-defined templates.
+- [ ] Live preview local server.
 
 ## Contribution
 
@@ -43,3 +45,5 @@ Zona is a small project maintained by a very busy graduate student. If you want 
 
 - [Zoner](https://git.sr.ht/~ryantrawick/zoner)
 - [Zonelets](https://zonelets.net/)
+
+> Note: I am aware of `Zola`, and the similar name is entirely a coincidence. I have never used it, nor read its documentation, thus it is not listed as an inspiration.
