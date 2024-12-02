@@ -6,9 +6,61 @@ Zona is a tool for building a static website, optimized for lightweight blogs fo
 
 ## Table of Contents
 
-- [Design Goals](#design-goals)
-- [v1 Features](#v1-features)
+- [Features](#v1-features)
+- [Installation](#installation)
 - [Roadmap](#roadmap)
+
+## v1 Features
+
+- Write your pages in Markdown.
+- Build a lightweight website with zero JavaScript.
+- Simple CLI build interface.
+- HTML layout optimized for screen readers and Neocities.
+
+## Getting Started
+
+### Dependencies
+
+- `go 1.23.2`
+
+```Bash
+# On Arch Linux
+sudo pacman -S go
+
+# On Ubuntu/Debian
+sudo apt install go
+```
+
+### Installation
+
+First, download the repository and open it:
+
+```Bash
+git clone https://github.com/ficcdaf/zona.git && cd zona
+```
+
+On Linux:
+
+```Bash
+# run the provided build script
+./build.sh
+```
+
+On other platforms:
+
+```Bash
+go build -o bin/zona cmd/zona
+```
+
+The resulting binary can be found at `bin/zona`.
+
+## Roadmap
+
+- [ ] Zona configuration file to define build options.
+- [ ] Image optimization & dithering options.
+- [ ] AUR package after first release
+- [ ] Automatic RSS/Atom feed generation.
+=======
 - [Contribution](#contribution)
 - [Inspirations](#inspirations)
 
@@ -40,10 +92,15 @@ Zona is intended to be easy-to-use. A user should be able to build a reasonably 
 ## Contribution
 
 Zona is a small project maintained by a very busy graduate student. If you want to contribute, you are more than welcome to submit issues and pull requests.
+>>>>>>> e368126 (Update readme)
 
 ## Inspirations
 
 - [Zoner](https://git.sr.ht/~ryantrawick/zoner)
+<<<<<<< HEAD
+- Zonelets
+=======
 - [Zonelets](https://zonelets.net/)
 
 > Note: I am aware of `Zola`, and the similar name is entirely a coincidence. I have never used it, nor read its documentation, thus it is not listed as an inspiration.
+>>>>>>> e368126 (Update readme)
