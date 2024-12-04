@@ -9,7 +9,6 @@ require (
 )
 
 require golang.org/x/text v0.20.0
-<<<<<<< HEAD
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
@@ -17,5 +16,3 @@ require (
 	github.com/urfave/cli/v2 v2.27.5 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 )
-=======
->>>>>>> d934e0c (updated go to 1.23.4)
