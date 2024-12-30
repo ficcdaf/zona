@@ -40,6 +40,27 @@ func ReplaceRoot(inPath, outRoot string) string {
 	return outPath
 }
 
+// InDir checks whether checkPath is
+// inside targDir.
+func InDir(checkPath string, targDir string) bool {
+	// fmt.Println("checking dir..")
+	i := 0
+	for i < 10 {
+		parent := filepath.Dir(checkPath)
+		fmted := filepath.Base(parent)
+		switch fmted {
+		case targDir:
+			// fmt.Printf("%s in %s\n", checkPath, targDir)
+			return true
+		case ".":
+			return false
+		}
+		checkPath = parent
+		i += 1
+	}
+	return false
+}
+
 // FileExists returns a boolean indicating
 // whether something exists at the path.
 func FileExists(path string) bool {

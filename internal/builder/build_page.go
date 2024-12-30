@@ -89,7 +89,8 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 		p.FooterName = settings.FooterName
 		p.Footer = settings.Footer
 	}
-	if t, ok := m["type"].(string); ok && t == "article" || t == "post" {
+	// TODO: Don't hard code posts dir name
+	if t, ok := m["type"].(string); util.InDir(in, "posts") && !ok || (ok && t == "article" || t == "post") {
 		p.Template = (settings.ArticleTemplate)
 	} else {
 		p.Template = (settings.DefaultTemplate)

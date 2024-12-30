@@ -1,5 +1,6 @@
 ---
 title: Yaml testing file
+type: article
 ---
 
 # My amazing markdown file!
