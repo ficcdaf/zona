@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -59,14 +60,18 @@ func renderImage(w io.Writer, node *ast.Image, entering bool, next *ast.Text) {
 	// here before the opening img tag
 	if entering {
 		fmt.Fprintf(w, "<div class=\"image-container\">\n")
-		fmt.Fprintf(w, `<img src="%s" title="%s">`, node.Destination, node.Title)
+		fmt.Fprintf(w, `<img src="%s" title="%s"`, node.Destination, node.Title)
 		if next != nil && len(next.Literal) > 0 {
-			// handle rendering Literal as markdown here
 			md := []byte(next.Literal)
-			html := convertEmbedded(md)
+			html, doc := convertEmbedded(md)
+			altText := extractPlainText(md, doc)
+			fmt.Fprintf(w, ` alt="%s">`, altText)
 			// TODO: render inside a special div?
 			// is this necessary since this is all inside image-container anyways?
 			fmt.Fprintf(w, `<small>%s</small>`, html)
+		} else {
+			//
+			io.WriteString(w, ">")
 		}
 	} else {
 		// if it's the closing img tag
@@ -128,17 +133,34 @@ func htmlRenderHook(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus, 
 
 // convertEmbedded renders markdown as HTML
 // but does NOT render images
-func convertEmbedded(md []byte) []byte {
+// also returns document AST
+func convertEmbedded(md []byte) ([]byte, *ast.Node) {
 	p := parser.NewWithExtensions(parser.CommonExtensions)
+	doc := p.Parse(md)
 	htmlFlags := html.CommonFlags | html.HrefTargetBlank
 	opts := html.RendererOptions{Flags: htmlFlags}
 	opts.RenderNodeHook = htmlRenderHookNoImage
 	r := html.NewRenderer(opts)
-	htmlText := markdown.ToHTML(md, p, r)
-	return htmlText
+	html := markdown.Render(doc, r)
+	return html, &doc
 }
 
 func newZonaRenderer(opts html.RendererOptions) *html.Renderer {
 	opts.RenderNodeHook = htmlRenderHook
 	return html.NewRenderer(opts)
+}
+
+// ExtractPlainText walks the AST and extracts plain text from the Markdown input.
+func extractPlainText(md []byte, doc *ast.Node) string {
+	var buffer bytes.Buffer
+
+	// Walk the AST and extract text nodes
+	ast.WalkFunc(*doc, func(node ast.Node, entering bool) ast.WalkStatus {
+		if textNode, ok := node.(*ast.Text); ok && entering {
+			buffer.Write(textNode.Literal) // Append the text content
+		}
+		return ast.GoToNext
+	})
+
+	return buffer.String()
 }
