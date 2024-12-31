@@ -5,4 +5,4 @@ fi
 
 go run cmd/zona/main.go test
 
-bat foobar/posts/in.html
+bat foobar/img.html
