@@ -53,6 +53,20 @@ func processLink(p string) string {
 	}
 }
 
+func renderImage(w io.Writer, node *ast.Image, entering bool) {
+	// we add image-container div tag
+	// here before the opening img tag
+	if entering {
+		fmt.Fprintf(w, "<div class=\"image-container\">\n")
+		fmt.Fprintf(w, `<img src="%s" title="%s">`, node.Destination, node.Title)
+	} else {
+		// if it's the closing img tag
+		// we close the div tag *after*
+		fmt.Fprintf(w, `</div>`)
+		fmt.Println("Image node not entering??")
+	}
+}
+
 func renderLink(w io.Writer, l *ast.Link, entering bool) {
 	if entering {
 		destPath := processLink(string(l.Destination))
@@ -66,9 +80,14 @@ func renderLink(w io.Writer, l *ast.Link, entering bool) {
 	}
 }
 
+// htmlRenderHook hooks the HTML renderer and overrides the rendering of certain nodes.
 func htmlRenderHook(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus, bool) {
 	if link, ok := node.(*ast.Link); ok {
 		renderLink(w, link, entering)
+		return ast.GoToNext, true
+	} else if image, ok := node.(*ast.Image); ok {
+		// TODO: should do something more interesting with the alt text -- like put it in a <small> tag?
+		renderImage(w, image, entering)
 		return ast.GoToNext, true
 	}
 	return ast.GoToNext, false
