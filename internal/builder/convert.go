@@ -53,12 +53,21 @@ func processLink(p string) string {
 	}
 }
 
-func renderImage(w io.Writer, node *ast.Image, entering bool) {
+// renderImage outputs an ast Image node as HTML string.
+func renderImage(w io.Writer, node *ast.Image, entering bool, next *ast.Text) {
 	// we add image-container div tag
 	// here before the opening img tag
 	if entering {
 		fmt.Fprintf(w, "<div class=\"image-container\">\n")
 		fmt.Fprintf(w, `<img src="%s" title="%s">`, node.Destination, node.Title)
+		if next != nil && len(next.Literal) > 0 {
+			// handle rendering Literal as markdown here
+			md := []byte(next.Literal)
+			html := convertEmbedded(md)
+			// TODO: render inside a special div?
+			// is this necessary since this is all inside image-container anyways?
+			fmt.Fprintf(w, `<small>%s</small>`, html)
+		}
 	} else {
 		// if it's the closing img tag
 		// we close the div tag *after*
@@ -80,17 +89,53 @@ func renderLink(w io.Writer, l *ast.Link, entering bool) {
 	}
 }
 
+func htmlRenderHookNoImage(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus, bool) {
+	if link, ok := node.(*ast.Link); ok {
+		renderLink(w, link, entering)
+		return ast.GoToNext, true
+	} else if _, ok := node.(*ast.Image); ok {
+		// we do not render images
+		return ast.GoToNext, true
+	}
+	return ast.GoToNext, false
+}
+
 // htmlRenderHook hooks the HTML renderer and overrides the rendering of certain nodes.
 func htmlRenderHook(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus, bool) {
 	if link, ok := node.(*ast.Link); ok {
 		renderLink(w, link, entering)
 		return ast.GoToNext, true
 	} else if image, ok := node.(*ast.Image); ok {
-		// TODO: should do something more interesting with the alt text -- like put it in a <small> tag?
-		renderImage(w, image, entering)
+		var nextNode *ast.Text
+		if entering {
+			nextNodes := node.GetChildren()
+			fmt.Println("img next node len:", len(nextNodes))
+			if len(nextNodes) == 1 {
+				if textNode, ok := nextNodes[0].(*ast.Text); ok {
+					nextNode = textNode
+				}
+			}
+		}
+		renderImage(w, image, entering, nextNode)
+		// Skip rendering of `nextNode` explicitly
+		if nextNode != nil {
+			return ast.SkipChildren, true
+		}
 		return ast.GoToNext, true
 	}
 	return ast.GoToNext, false
+}
+
+// convertEmbedded renders markdown as HTML
+// but does NOT render images
+func convertEmbedded(md []byte) []byte {
+	p := parser.NewWithExtensions(parser.CommonExtensions)
+	htmlFlags := html.CommonFlags | html.HrefTargetBlank
+	opts := html.RendererOptions{Flags: htmlFlags}
+	opts.RenderNodeHook = htmlRenderHookNoImage
+	r := html.NewRenderer(opts)
+	htmlText := markdown.ToHTML(md, p, r)
+	return htmlText
 }
 
 func newZonaRenderer(opts html.RendererOptions) *html.Renderer {
