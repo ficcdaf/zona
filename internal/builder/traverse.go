@@ -8,7 +8,8 @@ import (
 	"github.com/ficcdaf/zona/internal/util"
 )
 
-func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, settings *Settings) error {
+// TODO: Process the metadata and build a queue of files to convert here instead of converting them immediately
+func buildFile(inPath string, entry fs.DirEntry, err error, outRoot string, settings *Settings) error {
 	if err != nil {
 		return err
 	}
@@ -46,7 +47,7 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 
 func Traverse(root string, outRoot string, settings *Settings) error {
 	walkFunc := func(path string, entry fs.DirEntry, err error) error {
-		return processFile(path, entry, err, outRoot, settings)
+		return buildFile(path, entry, err, outRoot, settings)
 	}
 	err := filepath.WalkDir(root, walkFunc)
 	return err

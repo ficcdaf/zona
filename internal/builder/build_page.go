@@ -24,6 +24,7 @@ type PageData struct {
 	FooterName string
 	Footer     template.HTML
 	Template   string
+	Type       string
 }
 
 type Metadata map[string]interface{}
@@ -47,6 +48,32 @@ func processWithYaml(f []byte) (Metadata, []byte, error) {
 		return nil, nil, err
 	}
 	return meta, []byte(split[2]), nil
+}
+
+func processFrontmatter(p string) (Metadata, error) {
+	// read only the first three lines
+	f, err := util.ReadNLines(p, 3)
+	if err != nil {
+		return nil, err
+	}
+	// Check if the file has valid metadata
+	trimmed := bytes.TrimSpace(f)
+	normalized := strings.ReplaceAll(string(trimmed), "\r\n", "\n")
+	if !strings.HasPrefix(normalized, ("---\n")) {
+		// No valid yaml, so return the entire content
+		return nil, nil
+	}
+	// Separate YAML from rest of document
+	split := strings.SplitN(normalized, "---\n", 3)
+	if len(split) < 3 {
+		return nil, fmt.Errorf("Invalid frontmatter format.")
+	}
+	var meta Metadata
+	// Parse YAML
+	if err := yaml.Unmarshal([]byte(split[1]), &meta); err != nil {
+		return nil, err
+	}
+	return meta, nil
 }
 
 func buildPageData(m Metadata, in string, out string, settings *Settings) *PageData {
@@ -92,8 +119,10 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 	// TODO: Don't hard code posts dir name
 	if t, ok := m["type"].(string); util.InDir(in, "posts") && !ok || (ok && t == "article" || t == "post") {
 		p.Template = (settings.ArticleTemplate)
+		p.Type = "post"
 	} else {
 		p.Template = (settings.DefaultTemplate)
+		p.Type = ""
 	}
 	return p
 }

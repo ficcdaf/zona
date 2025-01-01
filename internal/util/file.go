@@ -1,6 +1,8 @@
 package util
 
 import (
+	"bufio"
+	"bytes"
 	"io"
 	"os"
 )
@@ -55,4 +57,26 @@ func CopyFile(inPath string, outPath string) error {
 	} else {
 		return nil
 	}
+}
+
+// ReadNLines reads the first N lines from a file as a single byte array
+func ReadNLines(filename string, n int) ([]byte, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var buffer bytes.Buffer
+	scanner := bufio.NewScanner(file)
+	for i := 0; i < 3 && scanner.Scan(); i++ {
+		buffer.Write(scanner.Bytes())
+		buffer.WriteByte('\n')
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return buffer.Bytes(), nil
 }
