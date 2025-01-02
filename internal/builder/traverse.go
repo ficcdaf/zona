@@ -23,7 +23,7 @@ func buildFile(inPath string, entry fs.DirEntry, err error, outRoot string, sett
 			if err := util.CreateParents(outPath); err != nil {
 				return err
 			}
-			if err := ConvertFile(inPath, outPath, settings); err != nil {
+			if err := BuildHtmlFile(inPath, outPath, settings); err != nil {
 				return errors.Join(errors.New("Error processing file "+inPath), err)
 			} else {
 				return nil
@@ -48,6 +48,15 @@ func buildFile(inPath string, entry fs.DirEntry, err error, outRoot string, sett
 func Traverse(root string, outRoot string, settings *Settings) error {
 	walkFunc := func(path string, entry fs.DirEntry, err error) error {
 		return buildFile(path, entry, err, outRoot, settings)
+	}
+	err := filepath.WalkDir(root, walkFunc)
+	return err
+}
+
+func ProcessTraverse(root string, outRoot string, settings *Settings) error {
+	pm := NewProcessMemory()
+	walkFunc := func(path string, entry fs.DirEntry, err error) error {
+		return processFile(path, entry, err, outRoot, settings, pm)
 	}
 	err := filepath.WalkDir(root, walkFunc)
 	return err

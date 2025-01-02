@@ -1,37 +1,64 @@
+// FILE: internal/builder/build_page_test.go
 package builder
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
-func Test_processWithYaml(t *testing.T) {
-	tests := []struct {
-		name string // description of this test case
-		// Named input parameters for target function.
-		f       []byte
-		want    Metadata
-		want2   []byte
-		wantErr bool
-	}{
-		// TODO: Add test cases.
+func TestProcessFrontmatter(t *testing.T) {
+	// Create a temporary file with valid frontmatter
+	validContent := `---
+title: "Test Title"
+description: "Test Description"
+---
+This is the body of the document.`
+
+	tmpfile, err := os.CreateTemp("", "testfile")
+	if err != nil {
+		t.Fatal(err)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, got2, gotErr := processWithYaml(tt.f)
-			if gotErr != nil {
-				if !tt.wantErr {
-					t.Errorf("processWithYaml() failed: %v", gotErr)
-				}
-				return
-			}
-			if tt.wantErr {
-				t.Fatal("processWithYaml() succeeded unexpectedly")
-			}
-			// TODO: update the condition below to compare got with tt.want.
-			if true {
-				t.Errorf("processWithYaml() = %v, want %v", got, tt.want)
-			}
-			if true {
-				t.Errorf("processWithYaml() = %v, want %v", got2, tt.want2)
-			}
-		})
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	if _, err := tmpfile.Write([]byte(validContent)); err != nil {
+		t.Fatal(err)
+	}
+	if err := tmpfile.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Test the processFrontmatter function with valid frontmatter
+	meta, err := processFrontmatter(tmpfile.Name())
+	if err != nil {
+		t.Fatalf("processFrontmatter failed: %v", err)
+	}
+
+	if meta["title"] != "Test Title" || meta["description"] != "Test Description" {
+		t.Errorf("Expected title 'Test Title' and description 'Test Description', got title '%s' and description '%s'", meta["title"], meta["description"])
+	}
+
+	// Create a temporary file with invalid frontmatter
+	invalidContent := `---
+title: "Test Title"
+description: "Test Description"
+This is the body of the document.`
+
+	tmpfile, err = os.CreateTemp("", "testfile")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name()) // clean up
+
+	if _, err := tmpfile.Write([]byte(invalidContent)); err != nil {
+		t.Fatal(err)
+	}
+	if err := tmpfile.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Test the processFrontmatter function with invalid frontmatter
+	_, err = processFrontmatter(tmpfile.Name())
+	if err == nil {
+		t.Fatalf("Expected error for invalid frontmatter, got nil")
 	}
 }

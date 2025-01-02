@@ -8,22 +8,39 @@ import (
 )
 
 type ProcessMemory struct {
-	// Pages holds all page data that may be
+	// Files holds all page data that may be
 	// needed while building *other* pages.
-	Pages []*Page
+	Files []*File
 	// Queue is a FIFO queue of Pages indexes to be built.
 	// queue should be constructed after all the Pages have been parsed
 	Queue []int
 	// Posts is an array of pointers to post pages
-	Posts []*Page
+	// This list is ONLY referenced for generating
+	// the archive, NOT by the build process!
+	Posts []*File
 }
 
-type Page struct {
-	Data    *PageData
-	Ext     string
-	InPath  string
-	OutPath string
-	Copy    bool
+type File struct {
+	Data           *PageData
+	Ext            string
+	InPath         string
+	OutPath        string
+	ShouldCopy     bool
+	HasFrontmatter bool
+}
+
+// NewProcessMemory initializes an empty
+// process memory structure
+func NewProcessMemory() *ProcessMemory {
+	f := make([]*File, 0)
+	q := make([]int, 0)
+	p := make([]*File, 0)
+	pm := &ProcessMemory{
+		f,
+		q,
+		p,
+	}
+	return pm
 }
 
 // processFile processes the metadata only
@@ -38,36 +55,44 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 	if !entry.IsDir() {
 		ext = filepath.Ext(inPath)
 		outPath = util.ReplaceRoot(inPath, outRoot)
+		// NOTE: This could be an if statement, but keeping
+		// the switch makes it easy to extend the logic here later
 		switch ext {
 		case ".md":
-			// fmt.Println("Processing markdown...")
 			toProcess = true
 			outPath = util.ChangeExtension(outPath, ".html")
-		// If it's not a file we need to process,
-		// we simply copy it to the destination path.
 		default:
 			toProcess = false
 		}
 	}
-	page := &Page{
-		nil,
-		ext,
-		inPath,
-		outPath,
-		!toProcess,
-	}
+
+	var pd *PageData
+	hasFrontmatter := false
 	if toProcess {
 		// process its frontmatter here
 		m, err := processFrontmatter(inPath)
 		if err != nil {
 			return err
 		}
-		pd := buildPageData(m, inPath, outPath, settings)
-		if pd.Type == "post" {
-			pm.Posts = append(pm.Posts, page)
+		if m != nil {
+			hasFrontmatter = true
 		}
-		page.Data = pd
+		pd = buildPageData(m, inPath, outPath, settings)
+
+	} else {
+		pd = nil
 	}
-	pm.Pages = append(pm.Pages, page)
+	file := &File{
+		pd,
+		ext,
+		inPath,
+		outPath,
+		!toProcess,
+		hasFrontmatter,
+	}
+	if pd != nil && pd.Type == "post" {
+		pm.Posts = append(pm.Posts, file)
+	}
+	pm.Files = append(pm.Files, file)
 	return nil
 }

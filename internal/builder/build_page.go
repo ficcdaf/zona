@@ -51,8 +51,8 @@ func processWithYaml(f []byte) (Metadata, []byte, error) {
 }
 
 func processFrontmatter(p string) (Metadata, error) {
-	// read only the first three lines
-	f, err := util.ReadNLines(p, 3)
+	// TODO: Also save index of the line where the actual document starts?
+	f, err := util.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}
@@ -60,11 +60,13 @@ func processFrontmatter(p string) (Metadata, error) {
 	trimmed := bytes.TrimSpace(f)
 	normalized := strings.ReplaceAll(string(trimmed), "\r\n", "\n")
 	if !strings.HasPrefix(normalized, ("---\n")) {
-		// No valid yaml, so return the entire content
+		// No frontmatter, return nil -- handled by caller
 		return nil, nil
 	}
 	// Separate YAML from rest of document
 	split := strings.SplitN(normalized, "---\n", 3)
+	// __AUTO_GENERATED_PRINT_VAR_START__
+	fmt.Println(fmt.Sprintf("processFrontmatter split: %v", split)) // __AUTO_GENERATED_PRINT_VAR_END__
 	if len(split) < 3 {
 		return nil, fmt.Errorf("Invalid frontmatter format.")
 	}
@@ -127,7 +129,7 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 	return p
 }
 
-func ConvertFile(in string, out string, settings *Settings) error {
+func BuildHtmlFile(in string, out string, settings *Settings) error {
 	mdPre, err := util.ReadFile(in)
 	if err != nil {
 		return err
