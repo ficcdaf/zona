@@ -50,32 +50,6 @@ func processWithYaml(f []byte) (Metadata, []byte, error) {
 	return meta, []byte(split[2]), nil
 }
 
-func processFrontmatter(p string) (Metadata, error) {
-	// TODO: Also save index of the line where the actual document starts?
-	f, err := util.ReadFile(p)
-	if err != nil {
-		return nil, err
-	}
-	// Check if the file has valid metadata
-	trimmed := bytes.TrimSpace(f)
-	normalized := strings.ReplaceAll(string(trimmed), "\r\n", "\n")
-	if !strings.HasPrefix(normalized, ("---\n")) {
-		// No frontmatter, return nil -- handled by caller
-		return nil, nil
-	}
-	// Separate YAML from rest of document
-	split := strings.SplitN(normalized, "---\n", 3)
-	if len(split) < 3 {
-		return nil, fmt.Errorf("invalid frontmatter format")
-	}
-	var meta Metadata
-	// Parse YAML
-	if err := yaml.Unmarshal([]byte(split[1]), &meta); err != nil {
-		return nil, err
-	}
-	return meta, nil
-}
-
 func buildPageData(m Metadata, in string, out string, settings *Settings) *PageData {
 	p := &PageData{}
 	if title, ok := m["title"].(string); ok {

@@ -70,7 +70,7 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 	hasFrontmatter := false
 	if toProcess {
 		// process its frontmatter here
-		m, err := processFrontmatter(inPath)
+		m, _, err := processFrontmatter(inPath)
 		if err != nil {
 			return err
 		}
