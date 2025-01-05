@@ -101,6 +101,9 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 	return p
 }
 
+// WARNING: This is a reference implementation
+// with passing tests but not likely to work in
+// the broader scope of the program!
 func BuildHtmlFile(in string, out string, settings *Settings) error {
 	mdPre, err := util.ReadFile(in)
 	if err != nil {
