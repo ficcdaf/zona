@@ -2,6 +2,7 @@ package builder
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
@@ -101,10 +102,7 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 	return p
 }
 
-// WARNING: This is a reference implementation
-// with passing tests but not likely to work in
-// the broader scope of the program!
-func BuildHtmlFile(in string, out string, settings *Settings) error {
+func _BuildHtmlFile(in string, out string, settings *Settings) error {
 	mdPre, err := util.ReadFile(in)
 	if err != nil {
 		return err
@@ -114,6 +112,53 @@ func BuildHtmlFile(in string, out string, settings *Settings) error {
 		return err
 	}
 	pd := buildPageData(metadata, in, out, settings)
+	fmt.Println("Title: ", pd.Title)
+
+	// build according to template here
+	html := MdToHTML(md)
+	pd.Content = template.HTML(html)
+
+	tmpl, err := template.New("webpage").Parse(pd.Template)
+	if err != nil {
+		return err
+	}
+
+	var output bytes.Buffer
+	if err := tmpl.Execute(&output, pd); err != nil {
+		return err
+	}
+
+	err = util.WriteFile(output.Bytes(), out)
+	return err
+}
+
+func BuildFile(f *File, settings *Settings) error {
+	if f.ShouldCopy {
+		if err := util.CreateParents(f.OutPath); err != nil {
+			return err
+		}
+		if err := util.CopyFile(f.InPath, f.OutPath); err != nil {
+			return errors.Join(errors.New("Error processing file "+f.InPath), err)
+		} else {
+			return nil
+		}
+	}
+
+	if err := util.CreateParents(f.OutPath); err != nil {
+		return err
+	}
+	if err := BuildHtmlFile(f.FrontMatterLen, f.InPath, f.OutPath, f.Data, settings); err != nil {
+		return errors.Join(errors.New("Error processing file "+f.InPath), err)
+	} else {
+		return nil
+	}
+}
+
+func BuildHtmlFile(l int, in string, out string, pd *PageData, settings *Settings) error {
+	md, err := util.ReadLineRange(in, l, -1)
+	if err != nil {
+		return err
+	}
 	fmt.Println("Title: ", pd.Title)
 
 	// build according to template here

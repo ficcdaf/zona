@@ -43,7 +43,7 @@ func main() {
 	}
 	settings := builder.GetSettings(*rootPath, "foobar")
 	// err := builder.Traverse(*rootPath, "foobar", settings)
-	err := builder.ProcessTraverse(*rootPath, "foobar", settings)
+	pm, err := builder.ProcessTraverse(*rootPath, "foobar", settings)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 	}

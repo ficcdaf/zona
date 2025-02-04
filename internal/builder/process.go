@@ -27,6 +27,7 @@ type File struct {
 	OutPath        string
 	ShouldCopy     bool
 	HasFrontmatter bool
+	FrontMatterLen int
 }
 
 // NewProcessMemory initializes an empty
@@ -68,9 +69,11 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 
 	var pd *PageData
 	hasFrontmatter := false
+	l := 0
 	if toProcess {
 		// process its frontmatter here
-		m, _, err := processFrontmatter(inPath)
+		m, le, err := processFrontmatter(inPath)
+		l = le
 		if err != nil {
 			return err
 		}
@@ -89,10 +92,21 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 		outPath,
 		!toProcess,
 		hasFrontmatter,
+		l,
 	}
 	if pd != nil && pd.Type == "post" {
 		pm.Posts = append(pm.Posts, file)
 	}
 	pm.Files = append(pm.Files, file)
+	return nil
+}
+
+func BuildProcessedFiles(pm *ProcessMemory, settings *Settings) error {
+	for _, f := range pm.Files {
+		err := BuildFile(f, settings)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

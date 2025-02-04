@@ -80,3 +80,32 @@ func ReadNLines(filename string, n int) ([]byte, error) {
 
 	return buffer.Bytes(), nil
 }
+
+// ReadLineRange reads a file in a given range of lines
+func ReadLineRange(filename string, start int, end int) ([]byte, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var buffer bytes.Buffer
+	scanner := bufio.NewScanner(file)
+	i := 0
+	for scanner.Scan() {
+		i++
+		if i >= start && (i <= end || end == -1) {
+			buffer.Write(scanner.Bytes())
+			buffer.WriteByte('\n')
+		}
+		if i > end && end != -1 {
+			break
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return buffer.Bytes(), nil
+}
