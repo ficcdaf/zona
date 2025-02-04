@@ -35,3 +35,35 @@ func TestReadNLines(t *testing.T) {
 		t.Errorf("Expected %q, got %q", expected, lines)
 	}
 }
+
+func TestReadLineRange(t *testing.T) {
+	tests := []struct {
+		name string // description of this test case
+		// Named input parameters for target function.
+		filename string
+		start    int
+		end      int
+		want     []byte
+		wantErr  bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, gotErr := ReadLineRange(tt.filename, tt.start, tt.end)
+			if gotErr != nil {
+				if !tt.wantErr {
+					t.Errorf("ReadLineRange() failed: %v", gotErr)
+				}
+				return
+			}
+			if tt.wantErr {
+				t.Fatal("ReadLineRange() succeeded unexpectedly")
+			}
+			// TODO: update the condition below to compare got with tt.want.
+			if true {
+				t.Errorf("ReadLineRange() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
