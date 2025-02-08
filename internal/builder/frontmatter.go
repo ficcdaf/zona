@@ -42,9 +42,10 @@ func readFrontmatter(path string) ([]byte, int, error) {
 	for s.Scan() {
 		l := s.Text()
 		if l == `---` {
-			if i > 0 && delims == 0 {
+			if i == 1 && delims == 0 {
 				// if --- is not the first line, we
 				// assume the file does not contain frontmatter
+				// fmt.Println("Delimiter first line")
 				return nil, 0, nil
 			}
 			delims += 1
@@ -53,6 +54,9 @@ func readFrontmatter(path string) ([]byte, int, error) {
 				break
 			}
 		} else {
+			if i == 0 {
+				return nil, 0, nil
+			}
 			lines = append(lines, l)
 			i += 1
 		}
@@ -76,6 +80,7 @@ func readFrontmatter(path string) ([]byte, int, error) {
 	} else {
 		// not enough delimiters, don't
 		// treat as frontmatter
-		return nil, 0, errors.New("frontmatter is missing closing delimiter")
+		s := fmt.Sprintf("%s: frontmatter is missing closing delimiter", path)
+		return nil, 0, errors.New(s)
 	}
 }

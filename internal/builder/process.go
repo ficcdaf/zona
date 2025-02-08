@@ -21,7 +21,7 @@ type ProcessMemory struct {
 }
 
 type File struct {
-	Data           *PageData
+	PageData       *PageData
 	Ext            string
 	InPath         string
 	OutPath        string

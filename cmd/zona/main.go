@@ -47,4 +47,5 @@ func main() {
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 	}
+	fmt.Printf("%#v", pm)
 }

@@ -147,7 +147,7 @@ func BuildFile(f *File, settings *Settings) error {
 	if err := util.CreateParents(f.OutPath); err != nil {
 		return err
 	}
-	if err := BuildHtmlFile(f.FrontMatterLen, f.InPath, f.OutPath, f.Data, settings); err != nil {
+	if err := BuildHtmlFile(f.FrontMatterLen, f.InPath, f.OutPath, f.PageData, settings); err != nil {
 		return errors.Join(errors.New("Error processing file "+f.InPath), err)
 	} else {
 		return nil
