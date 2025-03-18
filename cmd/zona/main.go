@@ -43,9 +43,17 @@ func main() {
 	}
 	settings := builder.GetSettings(*rootPath, "foobar")
 	// err := builder.Traverse(*rootPath, "foobar", settings)
+	// traverse the source and process file metadata
 	pm, err := builder.ProcessTraverse(*rootPath, "foobar", settings)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
+		os.Exit(1)
 	}
+	err = builder.BuildProcessedFiles(pm, settings)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
+		os.Exit(1)
+	}
+
 	fmt.Printf("%#v", pm)
 }

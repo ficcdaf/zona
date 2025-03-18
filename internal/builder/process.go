@@ -53,7 +53,9 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 	var toProcess bool
 	var outPath string
 	var ext string
-	if !entry.IsDir() {
+	if entry.IsDir() {
+		return nil
+	} else {
 		ext = filepath.Ext(inPath)
 		outPath = util.ReplaceRoot(inPath, outRoot)
 		// NOTE: This could be an if statement, but keeping

@@ -1,6 +1,8 @@
 # TODO
 
-**Last working on:** I fixed the frontmatter processing; now I should verify that the entire directory is being processed okay.
+- Fix the relative URL situation in the headers
+  - The link that's defined in header file should be relative to root, not the page being processed.
+  - How to handle this?
 
 ## Thoroughly test directory processing
 
