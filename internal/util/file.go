@@ -93,7 +93,6 @@ func ReadLineRange(filename string, start int, end int) ([]byte, error) {
 	scanner := bufio.NewScanner(file)
 	i := 0
 	for scanner.Scan() {
-		i++
 		if i >= start && (i <= end || end == -1) {
 			buffer.Write(scanner.Bytes())
 			buffer.WriteByte('\n')
@@ -101,6 +100,7 @@ func ReadLineRange(filename string, start int, end int) ([]byte, error) {
 		if i > end && end != -1 {
 			break
 		}
+		i++
 	}
 
 	if err := scanner.Err(); err != nil {

@@ -28,7 +28,7 @@ type PageData struct {
 	Type       string
 }
 
-type Metadata map[string]interface{}
+type Metadata map[string]any
 
 func processWithYaml(f []byte) (Metadata, []byte, error) {
 	// Check if the file has valid metadata
@@ -155,7 +155,15 @@ func BuildFile(f *File, settings *Settings) error {
 }
 
 func BuildHtmlFile(l int, in string, out string, pd *PageData, settings *Settings) error {
-	md, err := util.ReadLineRange(in, l, -1)
+	// WARN: ReadLineRange is fine, but l is the len of the frontmatter
+	// NOT including the delimiters!
+	start := l
+	// if the frontmatter exists (len > 0), then we need to
+	// account for two lines of delimiter!
+	if l != 0 {
+		start += 2
+	}
+	md, err := util.ReadLineRange(in, start, -1)
 	if err != nil {
 		return err
 	}
