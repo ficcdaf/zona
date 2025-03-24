@@ -9,7 +9,6 @@ GitHub or send a message to the
 
 <!-- prettier-ignore-start -->
 
-> [!NOTE]
 > Zona is currently in development. The `main` branch of this repository does
 > not yet contain the software. The `dev-stable` branch contains the code used
 > to generate [ficd.ca](https://ficd.ca) -- although the program is undocumented
