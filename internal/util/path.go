@@ -22,17 +22,21 @@ func ChangeExtension(in string, outExt string) string {
 	return strings.TrimSuffix(in, filepath.Ext(in)) + outExt
 }
 
-// TODO: look for .zona.yml instead?
+// find the root. check for a .zona.yml first,
+// then check if it's cwd.
 func getRoot(path string) string {
+	marker := ".zona.yml"
 	for {
+		// fmt.Printf("check for: %s\n", candidate)
 		parent := filepath.Dir(path)
-		if parent == "." {
-			break
+		candidate := filepath.Join(parent, marker)
+		if FileExists(candidate) {
+			return parent
+		} else if parent == "." {
+			return path
 		}
 		path = parent
 	}
-	// fmt.Println("getRoot: ", path)
-	return path
 }
 
 func ReplaceRoot(inPath, outRoot string) string {
