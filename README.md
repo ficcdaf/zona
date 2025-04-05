@@ -4,8 +4,9 @@
 optimized for lightweight blogs following minimalist design principles. The
 project is hosted on [sourcehut](https://sr.ht/~ficd/zona/) and mirrored on
 [GitHub](https://github.com/ficcdaf/zona). I am not accepting GitHub issues,
-please make your submission to the [issue tracker] or send an email to the
-public mailing list at
+please make your submission to the
+[issue tracker](https://todo.sr.ht/~ficd/zona) or send an email to the public
+mailing list at
 [~ficd/zona-devel@lists.sr.ht](mailto:~ficd/zona-devel@lists.sr.ht)
 
 <!-- prettier-ignore-start -->
