@@ -3,6 +3,7 @@ package util
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -107,4 +108,28 @@ func StripTopDir(path string) string {
 		return path
 	}
 	return filepath.Join(components[1:]...)
+}
+
+// we want to preserve a valid web-style path
+// and convert relative path to web-style
+// so we need to see
+// TODO; use Rel function to get abs path between
+// the file being analyzed's path, and what lil bro
+// is pointing to
+func NormalizePath(path string) (string, error) {
+	// empty path is root
+	if path == "" {
+		return "/", nil
+	}
+	if path[0] == '.' {
+		fmt.Println("Local path detected...")
+		abs, err := filepath.Abs(path)
+		fmt.Printf("abs: %s\n", abs)
+		if err != nil {
+			return "", fmt.Errorf("Couldn't normalize path: %w", err)
+		}
+		return ReplaceRoot(abs, "/"), nil
+	} else {
+		return path, nil
+	}
 }

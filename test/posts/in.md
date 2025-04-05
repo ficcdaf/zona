@@ -1,5 +1,6 @@
 ---
 title: tiltetest
+icon: ../assets/pic.png
 ---
 
 # My amazing markdown file!

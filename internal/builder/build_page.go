@@ -59,7 +59,12 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 		p.Title = util.PathToTitle(in)
 	}
 	if icon, ok := m["icon"].(string); ok {
-		p.Icon = icon
+		i, err := util.NormalizePath(icon)
+		if err != nil {
+			p.Icon = settings.IconName
+		} else {
+			p.Icon = i
+		}
 	} else {
 		p.Icon = settings.IconName
 	}
