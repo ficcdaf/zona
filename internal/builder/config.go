@@ -11,7 +11,7 @@ import (
 )
 
 var defaultNames = map[string]string{
-	"config":    "config.yml",
+	"config":    ".zona.yml",
 	"header":    "header.md",
 	"footer":    "footer.md",
 	"style":     "style.css",
@@ -22,7 +22,7 @@ var defaultNames = map[string]string{
 }
 
 //go:embed embed/article.html
-//go:embed embed/config.yml
+//go:embed embed/.zona.yml
 //go:embed embed/default.html
 //go:embed embed/favicon.png
 //go:embed embed/footer.md
