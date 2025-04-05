@@ -22,6 +22,7 @@ func ChangeExtension(in string, outExt string) string {
 	return strings.TrimSuffix(in, filepath.Ext(in)) + outExt
 }
 
+// TODO: look for .zona.yml instead?
 func getRoot(path string) string {
 	for {
 		parent := filepath.Dir(path)
@@ -38,6 +39,19 @@ func ReplaceRoot(inPath, outRoot string) string {
 	relPath := strings.TrimPrefix(inPath, getRoot(inPath))
 	outPath := filepath.Join(outRoot, relPath)
 	return outPath
+}
+
+// Indexify converts format path/file.ext
+// into path/file/index.ext
+func Indexify(in string) string {
+	ext := filepath.Ext(in)
+	trimmed := strings.TrimSuffix(in, ext)
+	filename := filepath.Base(trimmed)
+	if filename == "index" {
+		return in
+	}
+	prefix := strings.TrimSuffix(trimmed, filename)
+	return filepath.Join(prefix, filename, "index"+ext)
 }
 
 // InDir checks whether checkPath is

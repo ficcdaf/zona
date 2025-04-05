@@ -57,15 +57,17 @@ func processFile(inPath string, entry fs.DirEntry, err error, outRoot string, se
 		return nil
 	} else {
 		ext = filepath.Ext(inPath)
-		outPath = util.ReplaceRoot(inPath, outRoot)
 		// NOTE: This could be an if statement, but keeping
 		// the switch makes it easy to extend the logic here later
 		switch ext {
 		case ".md":
 			toProcess = true
+			outPath = util.ReplaceRoot(inPath, outRoot)
 			outPath = util.ChangeExtension(outPath, ".html")
+			outPath = util.Indexify(outPath)
 		default:
 			toProcess = false
+			outPath = util.ReplaceRoot(inPath, outRoot)
 		}
 	}
 
