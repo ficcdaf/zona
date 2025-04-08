@@ -1,0 +1,17 @@
+image: alpine/latest
+packages:
+  - git
+  - openssh
+secrets:
+  - 0639564d-6995-4e2e-844b-2f8feb0b7fb1
+environment:
+  repo: zona
+  github: git@github.com:ficcdaf/zona.git
+tasks:
+  - mirror: |
+      ssh-keyscan github.com >> ~/.ssh/known_hosts
+      cd "$repo"
+      git remote add github "$github"
+      git push --mirror github
+
+
