@@ -28,9 +28,12 @@ func ChangeExtension(in string, outExt string) string {
 func getRoot(path string) string {
 	marker := ".zona.yml"
 	for {
-		// fmt.Printf("check for: %s\n", candidate)
 		parent := filepath.Dir(path)
+		if parent == "/" {
+			panic(1)
+		}
 		candidate := filepath.Join(parent, marker)
+		// fmt.Printf("check for: %s\n", candidate)
 		if FileExists(candidate) {
 			return parent
 		} else if parent == "." {
@@ -110,26 +113,28 @@ func StripTopDir(path string) string {
 	return filepath.Join(components[1:]...)
 }
 
+func resolveRelativeTo(relPath string, basePath string) string {
+	baseDir := filepath.Dir(basePath)
+	combined := filepath.Join(baseDir, relPath)
+	resolved := filepath.Clean(combined)
+	return resolved
+}
+
 // we want to preserve a valid web-style path
 // and convert relative path to web-style
 // so we need to see
-// TODO; use Rel function to get abs path between
-// the file being analyzed's path, and what lil bro
-// is pointing to
-func NormalizePath(path string) (string, error) {
+func NormalizePath(target string, source string) (string, error) {
+	fmt.Printf("normalizing: %s\n", target)
 	// empty path is root
-	if path == "" {
+	if target == "" {
 		return "/", nil
 	}
-	if path[0] == '.' {
-		fmt.Println("Local path detected...")
-		abs, err := filepath.Abs(path)
-		fmt.Printf("abs: %s\n", abs)
-		if err != nil {
-			return "", fmt.Errorf("Couldn't normalize path: %w", err)
-		}
-		return ReplaceRoot(abs, "/"), nil
+	if target[0] == '.' {
+		resolved := resolveRelativeTo(target, source)
+		normalized := ReplaceRoot(resolved, "/")
+		fmt.Printf("Normalized: %s\n", normalized)
+		return normalized, nil
 	} else {
-		return path, nil
+		return target, nil
 	}
 }
