@@ -30,7 +30,16 @@ type PageData struct {
 
 type Metadata map[string]any
 
-func processWithYaml(f []byte) (Metadata, []byte, error) {
+type FrontMatter struct {
+	Title  string `yaml:"title"`
+	Icon   string `yaml:"icon"`
+	Style  string `yaml:"style"`
+	Header string `yaml:"header"`
+	Footer string `yaml:"footer"`
+	Type   string `yaml:"type"`
+}
+
+func processWithYaml(f []byte) (*FrontMatter, []byte, error) {
 	// Check if the file has valid metadata
 	trimmed := bytes.TrimSpace(f)
 	normalized := strings.ReplaceAll(string(trimmed), "\r\n", "\n")
@@ -43,23 +52,23 @@ func processWithYaml(f []byte) (Metadata, []byte, error) {
 	if len(split) < 3 {
 		return nil, nil, fmt.Errorf("invalid frontmatter format")
 	}
-	var meta Metadata
+	var meta FrontMatter
 	// Parse YAML
 	if err := yaml.Unmarshal([]byte(split[1]), &meta); err != nil {
 		return nil, nil, err
 	}
-	return meta, []byte(split[2]), nil
+	return &meta, []byte(split[2]), nil
 }
 
-func buildPageData(m Metadata, in string, out string, settings *Settings) *PageData {
+func buildPageData(m *FrontMatter, in string, out string, settings *Settings) *PageData {
 	p := &PageData{}
-	if title, ok := m["title"].(string); ok {
-		p.Title = util.WordsToTitle(title)
+	if m != nil && m.Title != "" {
+		p.Title = util.WordsToTitle(m.Title)
 	} else {
 		p.Title = util.PathToTitle(in)
 	}
-	if icon, ok := m["icon"].(string); ok {
-		i, err := util.NormalizePath(icon, in)
+	if m != nil && m.Icon != "" {
+		i, err := util.NormalizePath(m.Icon, in)
 		if err != nil {
 			p.Icon = settings.IconName
 		} else {
@@ -69,8 +78,8 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 		p.Icon = settings.IconName
 	}
 	var stylePath string
-	if style, ok := m["style"].(string); ok {
-		stylePath = style
+	if m != nil && m.Style != "" {
+		stylePath = m.Style
 	} else {
 		stylePath = settings.StylePath
 	}
@@ -81,23 +90,24 @@ func buildPageData(m Metadata, in string, out string, settings *Settings) *PageD
 		log.Fatalln("Error calculating stylesheet path: ", err)
 	}
 	p.Stylesheet = relPath
-	if header, ok := m["header"].(string); ok {
-		p.HeaderName = header
+
+	if m != nil && m.Header != "" {
+		p.HeaderName = m.Header
 		// for now we use default anyways
 		p.Header = settings.Header
 	} else {
 		p.HeaderName = settings.HeaderName
 		p.Header = settings.Header
 	}
-	if footer, ok := m["footer"].(string); ok {
-		p.FooterName = footer
+	if m != nil && m.Footer != "" {
+		p.FooterName = m.Footer
 		p.Footer = settings.Footer
 	} else {
 		p.FooterName = settings.FooterName
 		p.Footer = settings.Footer
 	}
 	// TODO: Don't hard code posts dir name
-	if t, ok := m["type"].(string); util.InDir(in, "posts") && !ok || (ok && t == "article" || t == "post") {
+	if (m != nil && (m.Type == "article" || m.Type == "post")) || util.InDir(in, "posts") {
 		p.Template = (settings.ArticleTemplate)
 		p.Type = "post"
 	} else {

@@ -10,17 +10,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func processFrontmatter(p string) (Metadata, int, error) {
+func processFrontmatter(p string) (*FrontMatter, int, error) {
 	f, l, err := readFrontmatter(p)
 	if err != nil {
 		return nil, l, err
 	}
-	var meta Metadata
+	var meta FrontMatter
 	// Parse YAML
 	if err := yaml.Unmarshal(f, &meta); err != nil {
 		return nil, l, fmt.Errorf("yaml frontmatter could not be parsed: %w", err)
 	}
-	return meta, l, nil
+	return &meta, l, nil
 }
 
 // readFrontmatter reads the file at `path` and scans
