@@ -1,6 +1,8 @@
+# run go tests
 test:
     go test ./...
 
+# test outputs
 gentest:
     #!/bin/bash
     if [ -e foobar ]; then
