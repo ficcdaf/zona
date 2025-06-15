@@ -1,5 +1,9 @@
 # Zona
 
+**IMPORTANT:** Zona is currently migrating to a Python implementation. The new
+repository is called [zona-py](https://git.sr.ht/~ficd/zona-py). **It will
+replace this repository once the migration is complete.**
+
 [Zona](https://sr.ht/~ficd/zona/) is a tool for building a static website,
 optimized for lightweight blogs following minimalist design principles. The
 project is hosted on [sourcehut](https://sr.ht/~ficd/zona/) and mirrored on
