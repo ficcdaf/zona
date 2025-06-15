@@ -1,5 +1,8 @@
 # TO-DO
 
+- **First**, re-write the settings & configuration system from scratch! It's
+  broken and messy and not worth trying to fix like this. Instead, actually
+  architect how it should work, _then_ implement it.
 - Refactor the directory structure processing
   - Implement zola-style structure instead
     - `zona init` command to populate the required files, _with_ defaults
